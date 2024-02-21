@@ -9,7 +9,6 @@ import (
 	"image"
 	"image/png"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"os/exec"
@@ -55,8 +54,6 @@ func (c *HTTPCli) Get(ctx context.Context, urll string, params map[string]string
 		}
 		urll = strings.TrimSuffix(urll, "&")
 	}
-
-	log.Println("debug url: ", urll)
 
 	resp, err := c.httpInner(ctx, "GET", urll, nil, options...)
 	if err != nil {

@@ -8,6 +8,7 @@ import (
 
 	httpclient "github.com/devinyf/dashscopego/httpclient"
 	qwen "github.com/devinyf/dashscopego/qwen"
+	wanx "github.com/devinyf/dashscopego/wanx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
@@ -183,14 +184,12 @@ func TestVLStreamChund(t *testing.T) {
 	assert.Regexp(t, "dog|person|individual|woman|girl", strings.ToLower(output))
 }
 
-/*
 func TestImageGeneration(t *testing.T) {
 	t.Parallel()
 	ctx := context.TODO()
 
 	cli := newTongyiClient(t, "wanx-v1")
 
-	// TODO: Content-Type missing or invalid, please check the request headers
 	req := &wanx.ImageSynthesisRequest{
 		Model: "wanx-v1",
 		Input: wanx.ImageSynthesisInput{
@@ -207,7 +206,6 @@ func TestImageGeneration(t *testing.T) {
 		assert.Equal(t, "image/png", blob.ImgType)
 	}
 }
-*/
 
 func TestMockStreamingChunk(t *testing.T) {
 	t.Parallel()

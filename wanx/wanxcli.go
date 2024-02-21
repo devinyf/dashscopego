@@ -3,6 +3,7 @@ package wanx
 import (
 	"context"
 	"errors"
+	"log"
 	"time"
 
 	httpclient "github.com/devinyf/dashscopego/httpclient"
@@ -17,8 +18,13 @@ var (
 
 //nolint:lll
 func CreateImageGeneration(ctx context.Context, payload *ImageSynthesisRequest, httpcli httpclient.IHttpClient, token string) ([]*ImgBlob, error) {
+	header := map[string]string{
+		"Content-Type": "application/json",
+	}
+
 	tokenOpt := httpclient.WithTokenHeaderOption(token)
-	resp, err := SyncCall(ctx, payload, httpcli, tokenOpt)
+	headerOpt := httpclient.WithHeader(header)
+	resp, err := SyncCall(ctx, payload, httpcli, tokenOpt, headerOpt)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +64,8 @@ func SyncCall(ctx context.Context, req *ImageSynthesisRequest, httpcli httpclien
 	for currentTaskStatus == TaskPending ||
 		currentTaskStatus == TaskRunning ||
 		currentTaskStatus == TaskSuspended {
-		delayDurationToCheckStatus := 500
+		delayDurationToCheckStatus := 800
+		log.Println("TaskStatus: ", currentTaskStatus)
 		time.Sleep(time.Duration(delayDurationToCheckStatus) * time.Millisecond)
 
 		// log.Println("TaskStatus: ", currentTaskStatus)

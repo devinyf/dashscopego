@@ -3,6 +3,8 @@
 阿里云平台 dashscope api 的 golang 封装 (非官方)
 
 开发中...
+
+通义千问
 ```go
 import (
 	"context"
@@ -52,3 +54,60 @@ func main() {
 }
 ```
 
+通义万相
+```go
+func main() {
+	model := string(wanx.WanxV1)
+	token := os.Getenv("DASHSCOPE_API_KEY")
+	if token == "" {
+		panic("token is empty")
+	}
+
+	cli := dashscopego.NewTongyiClient(model, token)
+
+	req := &wanx.ImageSynthesisRequest{
+		// Model: "wanx-v1",
+		Model: model,
+		Input: wanx.ImageSynthesisInput{
+			Prompt: "画一只松鼠",
+		},
+		Params: wanx.ImageSynthesisParams{
+			N: 1,
+		},
+	}
+	ctx := context.TODO()
+
+	imgBlobs, err := cli.CreateImageGeneration(ctx, req)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, blob := range imgBlobs {
+		saveImg2Desktop(blob.ImgType, blob.Data)
+	}
+}
+
+func saveImg2Desktop(fileType string, data []byte) {
+	buf := bytes.NewBuffer(data)
+	img, _, err := image.Decode(buf)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	usr, err := user.Current()
+	if err != nil {
+		panic(err)
+	}
+
+	f, err := os.Create(filepath.Join(usr.HomeDir, "Desktop", "wanx_image.png"))
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	if err := png.Encode(f, img); err != nil {
+		panic(err)
+	}
+}
+
+```
