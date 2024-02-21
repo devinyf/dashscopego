@@ -97,11 +97,10 @@ type Input[T IQwenContent] struct {
 type StreamingFunc func(ctx context.Context, chunk []byte) error
 
 type Request[T IQwenContent] struct {
-	Model      string      `json:"model"`
-	Input      Input[T]    `json:"input"`
-	Parameters *Parameters `json:"parameters,omitempty"`
-
-	StreamingFn    StreamingFunc `json:"-"`
+	Model        string        `json:"model"`
+	Input        Input[T]      `json:"input"`
+	Parameters   *Parameters   `json:"parameters,omitempty"`
+	StreamingFn  StreamingFunc `json:"-"`
 	HasUploadOss bool          `json:"-"`
 }
 

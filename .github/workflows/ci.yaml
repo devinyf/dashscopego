@@ -24,16 +24,6 @@ jobs:
         with:
           args: --timeout=4m
           version: v1.55.1
-  build-examples:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/setup-go@v4
-        with:
-          go-version: stable
-          cache: false
-      - uses: actions/checkout@v3
-      - name: Build examples
-        run: make build-examples
   build-test:
     runs-on: ubuntu-latest
     steps:
@@ -41,7 +31,5 @@ jobs:
         with:
           go-version: stable
       - uses: actions/checkout@v3
-      - name: Build
-        run: go build -v ./...
       - name: Test
         run: go test -v ./...

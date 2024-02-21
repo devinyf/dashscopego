@@ -1,14 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"strings"
 
 	httpclient "github.com/devinyf/dashscopego/httpclient"
-
 	"github.com/google/uuid"
 )
 
@@ -40,9 +38,9 @@ func ConnRecognitionClient() (*httpclient.WsClient, error) {
 		Payload: payload,
 	}
 
-	client := httpclient.NewWsClient(PARAFORMER_WS_URL, header)
+	client := httpclient.NewWsClient(ParaformerWSURL, header)
 
-	fmt.Println("conn client...")
+	log.Println("conn client...")
 	if err := client.ConnClient(req); err != nil {
 		return nil, err
 	}
@@ -61,7 +59,7 @@ func SendRadioData(cli *httpclient.WsClient, bytesData []byte) {
 }
 
 type ResultWriter interface {
-	WriteResult(string) error
+	WriteResult(str string) error
 }
 
 func HandleRecognitionResult(cli *httpclient.WsClient, writer ResultWriter) {
@@ -72,7 +70,7 @@ BREAK_FOR:
 		select {
 		case output, ok := <-outputChan:
 			if !ok {
-				fmt.Println("outputChan is closed")
+				log.Println("outputChan is closed")
 				break BREAK_FOR
 			}
 
@@ -84,14 +82,14 @@ BREAK_FOR:
 
 		case err := <-errChan:
 			if err != nil {
-				fmt.Println("error: ", err)
+				log.Println("error: ", err)
 				// TODO: raise error
 				break BREAK_FOR
 			}
 		}
 	}
 
-	fmt.Println("get recognition result...over")
+	log.Println("get recognition result...over")
 }
 
 // task_id length 32.
@@ -100,7 +98,7 @@ func generateTaskID() string {
 	if err != nil {
 		panic(err)
 	}
-	uuid := strings.Replace(u.String(), "-", "", -1)
+	uuid := strings.ReplaceAll(u.String(), "-", "")
 
 	return uuid
 }

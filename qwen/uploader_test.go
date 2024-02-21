@@ -8,7 +8,9 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func getApiKey(t *testing.T) string {
+func getAPIKey(t *testing.T) string {
+	t.Helper()
+
 	apikey := os.Getenv("DASHSCOPE_API_KEY")
 	if apikey == "" {
 		t.Skip("token is empty")
@@ -19,7 +21,7 @@ func getApiKey(t *testing.T) string {
 
 func TestGetUploadCertificate(t *testing.T) {
 	t.Parallel()
-	apiKey := getApiKey(t)
+	apiKey := getAPIKey(t)
 	ctx := context.TODO()
 
 	resp, err := getUploadCertificate(ctx, "qwen-vl-plus", apiKey)
@@ -43,11 +45,11 @@ func TestGetUploadCertificate(t *testing.T) {
 
 func TestUploadingImageFromURL(t *testing.T) {
 	t.Parallel()
-	apiKey := getApiKey(t)
+	apiKey := getAPIKey(t)
 
 	// network problem...
-	// var testImgURL = "https://github.com/devinyf/dashscopego/blob/main/docs/static/img/parrot-icon.png"
-	var testImgURL = "https://pic.ntimg.cn/20140113/8800276_184351657000_2.jpg"
+	// testImgURL := "https://github.com/devinyf/dashscopego/blob/main/docs/static/img/parrot-icon.png"
+	testImgURL := "https://pic.ntimg.cn/20140113/8800276_184351657000_2.jpg"
 
 	ctx := context.TODO()
 

@@ -42,7 +42,7 @@ func (t *TextContent) SetImage(_ string) {
 	panic("text-generation only model: can not use SetImage for TextContent")
 }
 
-func (vlist *TextContent) PopImageContent() (VLContent, bool) {
+func (t *TextContent) PopImageContent() (VLContent, bool) {
 	panic("text-generation only model: can not use PopImage for TextContent")
 }
 
@@ -106,7 +106,8 @@ func (vlist *VLContentList) PopImageContent() (VLContent, bool) {
 				*vlist = preSlice
 			} else {
 				postSlice := (*vlist)[i+1:]
-				*vlist = append(preSlice, postSlice...)
+				*vlist = append(*vlist, preSlice...)
+				*vlist = append(*vlist, postSlice...)
 			}
 
 			return v, isOk

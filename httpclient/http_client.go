@@ -9,6 +9,7 @@ import (
 	"image"
 	"image/png"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"os/exec"
@@ -55,7 +56,7 @@ func (c *HTTPCli) Get(ctx context.Context, urll string, params map[string]string
 		urll = strings.TrimSuffix(urll, "&")
 	}
 
-	fmt.Println("debug url: ", urll)
+	log.Println("debug url: ", urll)
 
 	resp, err := c.httpInner(ctx, "GET", urll, nil, options...)
 	if err != nil {
@@ -172,7 +173,6 @@ func (c *HTTPCli) Post(ctx context.Context, urll string, reqbody interface{}, re
 	return nil
 }
 
-// func (c *HTTPCli) EncodeJSONBody(body interface{}) ([]byte, error) {
 func (c *HTTPCli) EncodeJSONBody(body interface{}) (*bytes.Buffer, error) {
 	if body != nil {
 		var bodyJSON []byte

@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"log"
 	"os"
 
 	"github.com/devinyf/dashscopego"
@@ -19,7 +19,7 @@ func main() {
 
 	cli := dashscopego.NewTongyiClient(model, token)
 
-	content := qwen.TextContent("讲个冷笑话")
+	content := qwen.TextContent("tell me a joke")
 
 	input := dashscopego.TextInput{
 		Messages: []dashscopego.TextMessage{
@@ -29,7 +29,7 @@ func main() {
 
 	// callback function:  print stream result
 	streamCallbackFn := func(ctx context.Context, chunk []byte) error {
-		fmt.Print(string(chunk))
+		log.Print(string(chunk))
 		return nil
 	}
 	req := &dashscopego.TextRequest{
@@ -43,6 +43,6 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println("\nnon-stream result: ")
-	fmt.Println(resp.Output.Choices[0].Message.Content.ToString())
+	log.Println("\nnon-stream result: ")
+	log.Println(resp.Output.Choices[0].Message.Content.ToString())
 }

@@ -11,14 +11,14 @@ import (
 )
 
 const (
-	// Timeout for establishing the connection and for reading/writing messages
+	// Timeout for establishing the connection and for reading/writing messages.
 	writeWait = 30 * time.Second
 
 	pongWait   = 20 * time.Second
 	pingPeriod = (pongWait * 8) / 10
 	// Maximum message size allowed from peer.
 	maxMessageSize = 1024
-	// maxMessageSize = 512
+	// maxMessageSize = 512.
 )
 
 type WsMessage struct {
@@ -30,7 +30,7 @@ type WsMessage struct {
 
 // Client represents a websocket client.
 type WsClient struct {
-	Url        string
+	URL        string
 	Headers    http.Header
 	Conn       *websocket.Conn
 	inputChan  chan WsMessage
@@ -40,7 +40,7 @@ type WsClient struct {
 
 func NewWsClient(url string, headers http.Header) *WsClient {
 	return &WsClient{
-		Url:     url,
+		URL:     url,
 		Headers: headers,
 	}
 }
@@ -74,7 +74,7 @@ func (c *WsClient) readPump() {
 			break
 		}
 
-		fmt.Println("message: ", string(message))
+		log.Println("message: ", string(message))
 		c.outputChan <- WsMessage{
 			Type: websocket.TextMessage,
 			Data: message,
@@ -84,6 +84,8 @@ func (c *WsClient) readPump() {
 }
 
 // writePump pumps messages from the write channel to the websocket connection.
+//
+//nolint:cyclop
 func (c *WsClient) writePump() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
@@ -108,11 +110,11 @@ func (c *WsClient) writePump() {
 			}
 
 			if message.Type == websocket.TextMessage {
-				fmt.Printf("send start data-- err: %v\n", string(message.Data))
+				log.Printf("send start data-- err: %v\n", string(message.Data))
 			}
 
 			if err := c.Conn.WriteMessage(message.Type, message.Data); err != nil {
-				fmt.Println("err in write message: ", err)
+				log.Println("err in write message: ", err)
 				c.errChan <- err
 				return
 			}
@@ -133,10 +135,12 @@ func (c *WsClient) writePump() {
 
 // connect initializes the websocket connection and starts the read and write pumps.
 func (c *WsClient) connect() error {
-	conn, _, err := websocket.DefaultDialer.Dial(c.Url, c.Headers)
+	conn, resp, err := websocket.DefaultDialer.Dial(c.URL, c.Headers)
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
+
 	c.Conn = conn
 	c.inputChan = make(chan WsMessage, 100)
 	c.outputChan = make(chan WsMessage, 100)
@@ -153,17 +157,20 @@ func (c *WsClient) ConnClient(req interface{}) error {
 		return err
 	}
 
-	reqJson, _ := json.Marshal(req)
+	reqJSON, err := json.Marshal(req)
+	if err != nil {
+		return err
+	}
 	reqInput := WsMessage{
 		Type: websocket.TextMessage,
-		Data: reqJson,
+		Data: reqJSON,
 	}
 
 	c.inputChan <- reqInput
 
 	err, ok := <-c.errChan
 	if ok && err != nil {
-		fmt.Println("error: ", err)
+		log.Println("error: ", err)
 	}
 	return nil
 }

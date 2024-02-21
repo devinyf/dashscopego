@@ -79,7 +79,6 @@ type UploadRequest struct {
 
 // uploading local image to aliyun oss, a oss url will be returned.
 func UploadLocalImg(ctx context.Context, filePath, model, apiKey string) (string, error) {
-
 	fileBytes, mimeType, err := loadLocalFileWithMimeType(filePath)
 	if err != nil {
 		return "", err
@@ -99,11 +98,9 @@ func UploadImgFromURL(ctx context.Context, fileURL, model, apiKey string) (strin
 	fileName := filepath.Base(fileURL)
 
 	return uploadImg(ctx, fileBytes, fileName, mimeType, model, apiKey)
-
 }
 
 func uploadImg(ctx context.Context, fileBytes []byte, fileName, mimeType, model, apiKey string) (string, error) {
-
 	certInfo, err := getUploadCertificate(ctx, model, apiKey)
 	if err != nil {
 		return "", &WrapMessageError{Message: "upload Cert Error", Cause: err}
@@ -114,11 +111,11 @@ func uploadImg(ctx context.Context, fileBytes []byte, fileName, mimeType, model,
 	formData := buildFormData(certInfo.Data, ossKey, mimeType)
 
 	header := getUploadHeaders()
-	uploadReq, extra_headers, err := buildMultiPartRequest(fileName, formData, fileBytes)
+	uploadReq, extraHeaders, err := buildMultiPartRequest(fileName, formData, fileBytes)
 	if err != nil {
 		return "", err
 	}
-	for k, v := range extra_headers {
+	for k, v := range extraHeaders {
 		header[k] = v
 	}
 
@@ -130,8 +127,8 @@ func uploadImg(ctx context.Context, fileBytes []byte, fileName, mimeType, model,
 		return "", &httpclient.HTTPRequestError{Message: "upload image Error", Cause: err}
 	}
 
-	ossUrl := "oss://" + ossKey
-	return ossUrl, nil
+	ossURL := "oss://" + ossKey
+	return ossURL, nil
 }
 
 func getUploadHeaders() map[string]string {
@@ -157,7 +154,7 @@ func loadLocalFileWithMimeType(filePath string) ([]byte, string, error) {
 }
 
 func downloadImageWithMimeType(url string) ([]byte, string, error) {
-	resp, err := http.Get(url)
+	resp, err := http.Get(url) //nolint:all
 	if err != nil {
 		return nil, "", &WrapMessageError{Message: "http get image Error", Cause: err}
 	}
@@ -176,10 +173,10 @@ func downloadImageWithMimeType(url string) ([]byte, string, error) {
 	return imgBytes, mt.String(), nil
 }
 
-// build request body for upload file
+// build request body for upload file.
 func buildMultiPartRequest(fileName string, formData map[string]string, fileBytes []byte) (*bytes.Buffer, map[string]string, error) {
 	// buffer to save multipart body
-	var requestBody = new(bytes.Buffer)
+	requestBody := new(bytes.Buffer)
 	writer := multipart.NewWriter(requestBody)
 
 	// write form data to buffer
@@ -212,7 +209,7 @@ func buildMultiPartRequest(fileName string, formData map[string]string, fileByte
 }
 
 func buildFormData(certOutput CertOutput, ossKey, mimeType string) map[string]string {
-	var formData = make(map[string]string)
+	formData := make(map[string]string)
 	formData["OSSAccessKeyId"] = certOutput.OSSAccessKeyID
 	formData["Signature"] = certOutput.Signature
 	formData["policy"] = certOutput.Policy

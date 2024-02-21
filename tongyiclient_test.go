@@ -10,8 +10,6 @@ import (
 	qwen "github.com/devinyf/dashscopego/qwen"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	// wanx "github.com/devinyf/dashscopego/wanx"
 	"go.uber.org/mock/gomock"
 )
 
@@ -192,6 +190,7 @@ func TestImageGeneration(t *testing.T) {
 
 	cli := newTongyiClient(t, "wanx-v1")
 
+	// TODO: Content-Type missing or invalid, please check the request headers
 	req := &wanx.ImageSynthesisRequest{
 		Model: "wanx-v1",
 		Input: wanx.ImageSynthesisInput{

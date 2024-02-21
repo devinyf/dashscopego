@@ -1,6 +1,6 @@
 package main
 
-const PARAFORMER_WS_URL = "wss://dashscope.aliyuncs.com/api-ws/v1/inference"
+const ParaformerWSURL = "wss://dashscope.aliyuncs.com/api-ws/v1/inference"
 
 type Parameters struct {
 	SampleRate int    `json:"sample_rate"`
@@ -55,8 +55,7 @@ type PayloadOut struct {
 	Usage  Usage  `json:"usage"`
 }
 
-type Attributes struct {
-}
+type Attributes struct{}
 
 type Header struct {
 	TaskID     string     `json:"task_id"`
