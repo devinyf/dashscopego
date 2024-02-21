@@ -1,4 +1,4 @@
-package tongyiclient
+package dashscopego
 
 import (
 	"context"

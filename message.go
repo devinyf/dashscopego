@@ -1,4 +1,4 @@
-package tongyiclient
+package dashscopego
 
 import (
 	"github.com/devinyf/dashscopego/qwen"
