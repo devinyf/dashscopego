@@ -45,7 +45,7 @@ func main() {
 	}
 }
 
-func saveImg2Desktop(fileType string, data []byte) {
+func saveImg2Desktop(_ string, data []byte) {
 	buf := bytes.NewBuffer(data)
 	img, _, err := image.Decode(buf)
 	if err != nil {
