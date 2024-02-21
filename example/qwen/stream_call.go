@@ -1,9 +1,5 @@
-### dashscopego
+package main
 
-阿里云平台 dashscope api 的 golang 封装 (非官方)
-
-开发中...
-```go
 import (
 	"context"
 	"fmt"
@@ -50,5 +46,3 @@ func main() {
 	fmt.Println("\nnon-stream result: ")
 	fmt.Println(resp.Output.Choices[0].Message.Content.ToString())
 }
-```
-
