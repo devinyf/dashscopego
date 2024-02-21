@@ -50,9 +50,20 @@ func (c *WsClient) readPump() {
 	defer func() {
 		c.Conn.Close()
 	}()
+
+	pongDelay := time.Now().Add(pongWait)
+	pongFn := func(string) error {
+		if err := c.Conn.SetReadDeadline(pongDelay); err != nil {
+			return err
+		}
+		return nil
+	}
+
 	c.Conn.SetReadLimit(maxMessageSize)
-	c.Conn.SetReadDeadline(time.Now().Add(pongWait))
-	c.Conn.SetPongHandler(func(string) error { c.Conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
+	if err := c.Conn.SetReadDeadline(pongDelay); err != nil {
+		log.Printf("error: %v", err)
+	}
+	c.Conn.SetPongHandler(pongFn)
 	for {
 		_, message, err := c.Conn.ReadMessage()
 		if err != nil {
@@ -85,10 +96,16 @@ func (c *WsClient) writePump() {
 			if !ok {
 				// The write channel is closed.
 				c.errChan <- fmt.Errorf("write channel is closed")
-				c.Conn.WriteMessage(websocket.CloseMessage, []byte{})
+				err := c.Conn.WriteMessage(websocket.CloseMessage, []byte{})
+				if err != nil {
+					log.Printf("error: %v", err)
+				}
 				return
 			}
-			c.Conn.SetWriteDeadline(time.Now().Add(writeWait))
+			err := c.Conn.SetWriteDeadline(time.Now().Add(writeWait))
+			if err != nil {
+				log.Printf("error: %v", err)
+			}
 
 			if message.Type == websocket.TextMessage {
 				fmt.Printf("send start data-- err: %v\n", string(message.Data))
@@ -102,7 +119,10 @@ func (c *WsClient) writePump() {
 
 			c.errChan <- nil
 		case <-ticker.C:
-			c.Conn.SetWriteDeadline(time.Now().Add(writeWait))
+			if err := c.Conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
+				c.errChan <- err
+				return
+			}
 			if err := c.Conn.WriteMessage(websocket.PingMessage, nil); err != nil {
 				c.errChan <- err
 				return

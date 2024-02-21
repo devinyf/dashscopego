@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -42,13 +43,17 @@ func ConnRecognitionClient() (*httpclient.WsClient, error) {
 	client := httpclient.NewWsClient(PARAFORMER_WS_URL, header)
 
 	fmt.Println("conn client...")
-	client.ConnClient(req)
+	if err := client.ConnClient(req); err != nil {
+		return nil, err
+	}
 
 	return client, nil
 }
 
 func CloseRecognitionClient(cli *httpclient.WsClient) {
-	cli.CloseClient()
+	if err := cli.CloseClient(); err != nil {
+		log.Printf("close client error: %v", err)
+	}
 }
 
 func SendRadioData(cli *httpclient.WsClient, bytesData []byte) {
@@ -72,7 +77,10 @@ BREAK_FOR:
 			}
 
 			// named pipe out to rust
-			writer.WriteResult(string(output.Data) + "\n")
+			err := writer.WriteResult(string(output.Data) + "\n")
+			if err != nil {
+				log.Printf("write result error: %v", err)
+			}
 
 		case err := <-errChan:
 			if err != nil {
