@@ -1,9 +1,5 @@
 package qwen
 
-import (
-	"log"
-)
-
 const (
 	DashScopeBaseURL = "https://dashscope.aliyuncs.com/api"
 	QwenSubURL       = "/v1/services/aigc/text-generation/generation"
@@ -13,14 +9,16 @@ const (
 type ModelQwen string
 
 const (
+	// text-generation model.
 	QwenTurbo          ModelQwen = "qwen-turbo"
 	QwenPlus           ModelQwen = "qwen-plus"
 	QwenMax            ModelQwen = "qwen-max"
 	QwenMax1201        ModelQwen = "qwen-max-1201"
 	QwenMaxLongContext ModelQwen = "qwen-max-longcontext"
-)
 
-type Model struct{}
+	// multi-modal model.
+	QwenVLPlus ModelQwen = "qwen-vl-plus"
+)
 
 // text-generation only.
 func URLQwen() string {
@@ -32,6 +30,7 @@ func URLQwenVL() string {
 	return DashScopeBaseURL + QwenVLSubURL
 }
 
+/*
 func ChoseModelQwen(model string) ModelQwen {
 	m := Model{}
 	switch model {
@@ -50,6 +49,8 @@ func ChoseModelQwen(model string) ModelQwen {
 		return m.QwenTurbo()
 	}
 }
+
+type Model struct{}
 
 func (m *Model) QwenTurbo() ModelQwen {
 	return QwenTurbo
@@ -70,3 +71,5 @@ func (m *Model) QwenMax1201() ModelQwen {
 func (m *Model) QwenMaxLongContext() ModelQwen {
 	return QwenMaxLongContext
 }
+
+*/

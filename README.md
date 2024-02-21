@@ -109,5 +109,73 @@ func saveImg2Desktop(fileType string, data []byte) {
 		panic(err)
 	}
 }
-
 ```
+
+通义千问VL(视觉理解大模型)
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+
+	"github.com/devinyf/dashscopego"
+	"github.com/devinyf/dashscopego/qwen"
+)
+
+func main() {
+	model := string(qwen.QwenVLPlus)
+	token := os.Getenv("DASHSCOPE_API_KEY")
+
+	if token == "" {
+		panic("token is empty")
+	}
+
+	cli := dashscopego.NewTongyiClient(model, token)
+
+	sysContent := qwen.VLContentList{
+		{
+			Text: "You are a helpful assistant.",
+		},
+	}
+	userContent := qwen.VLContentList{
+		{
+			Text: "用唐诗体描述一下这张图片中的内容",
+		},
+		{
+			Image: "https://dashscope.oss-cn-beijing.aliyuncs.com/images/dog_and_girl.jpeg",
+		},
+	}
+
+	input := dashscopego.VLInput{
+		Messages: []dashscopego.VLMessage{
+			{Role: "system", Content: &sysContent},
+			{Role: "user", Content: &userContent},
+		},
+	}
+
+	// callback function:  print stream result
+	streamCallbackFn := func(ctx context.Context, chunk []byte) error {
+		fmt.Print(string(chunk))
+		return nil
+	}
+	req := &dashscopego.VLRequest{
+		Input:       input,
+		StreamingFn: streamCallbackFn,
+	}
+
+	ctx := context.TODO()
+	resp, err := cli.CreateVLCompletion(ctx, req, qwen.URLQwenVL())
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("\nnon-stream result: ")
+	fmt.Println(resp.Output.Choices[0].Message.Content.ToString())
+}
+```
+
+通义千问Audio TODO...
+
+Paraformer语音识别: TODO...
