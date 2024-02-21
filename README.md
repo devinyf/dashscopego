@@ -113,17 +113,6 @@ func saveImg2Desktop(fileType string, data []byte) {
 
 通义千问VL(视觉理解大模型)
 ```go
-package main
-
-import (
-	"context"
-	"fmt"
-	"os"
-
-	"github.com/devinyf/dashscopego"
-	"github.com/devinyf/dashscopego/qwen"
-)
-
 func main() {
 	model := string(qwen.QwenVLPlus)
 	token := os.Getenv("DASHSCOPE_API_KEY")
