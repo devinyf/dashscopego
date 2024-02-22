@@ -4,8 +4,11 @@
 
 #### examples:
 * [通义千问](#通义千问)
-* [通义千问VL](#通义千问vl视觉理解大模型)
-* [通义万相](#通义万相文生图)
+* [通义千问VL(视觉理解大模型)](#通义千问vl视觉理解大模型)
+* 通义千问Audio(音频语音大模型) TODO
+* [通义万相(文生图)](#通义万相文生图)
+* Paraformer(语音识别转文字) TODO
+* 模型插件调用 TODO
 
 开发中...
 
@@ -175,7 +178,3 @@ func main() {
 	fmt.Println(resp.Output.Choices[0].Message.Content.ToString())
 }
 ```
-### TODO...
-* 通义千问Audio(音频语言大模型)
-* Paraformer (语音识别转文字)
-* 模型插件调用(申请了试用,目前还没通过审核...)
