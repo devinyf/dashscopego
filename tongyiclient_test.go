@@ -177,8 +177,6 @@ func TestVLStreamChund(t *testing.T) {
 
 	resp, err := cli.CreateVLCompletion(ctx, req, qwen.URLQwenVL())
 
-	// fmt.Println("-->:", output)
-
 	require.NoError(t, err)
 	assert.Equal(t, output, resp.Output.Choices[0].Message.Content.ToString())
 	assert.Regexp(t, "dog|person|individual|woman|girl", strings.ToLower(output))

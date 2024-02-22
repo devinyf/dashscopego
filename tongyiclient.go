@@ -49,18 +49,17 @@ func (q *TongyiClient) CreateVLCompletion(ctx context.Context, payload *qwen.Req
 	// fmt.Println("upload images...")
 	for _, vMsg := range payload.Input.Messages {
 		if vMsg.Role == "user" {
-			if tmpImageContent, ok := vMsg.Content.PopImageContent(); ok {
+			if tmpImageContent, hasImg := vMsg.Content.PopImageContent(); hasImg {
 				var ossURL string
 				var err error
 				filepath := tmpImageContent.Image
-				// fmt.Println(">>> filepath: ", filepath)
 				switch {
+				case strings.Contains(filepath, "dashscope.oss"):
+					ossURL = filepath
 				case strings.HasPrefix(filepath, "file://"):
-					// fmt.Println(">>> 111111: ", filepath)
 					filepath = strings.TrimPrefix(filepath, "file://")
 					ossURL, err = qwen.UploadLocalImg(ctx, filepath, payload.Model, q.token)
 				case strings.HasPrefix(filepath, "https://") || strings.HasPrefix(filepath, "http://"):
-					// fmt.Println(">>> 2222222: ", filepath)
 					ossURL, err = qwen.UploadImgFromURL(ctx, filepath, payload.Model, q.token)
 				default:
 					return nil, ErrImageFilePrefix
@@ -77,11 +76,50 @@ func (q *TongyiClient) CreateVLCompletion(ctx context.Context, payload *qwen.Req
 		}
 	}
 
-	// =====================
-	// fmt.Printf("after upload:  %+v\n", payload.Input.Messages)
-	// msgJson, _ := json.Marshal(payload.Input.Messages)
-	// fmt.Printf("after upload:  %+v\n", string(msgJson))
-	// =====================
+	return genericCompletion(ctx, payload, q.httpCli, url, q.token)
+}
+
+// TODO: COPY CreateVLCompletion 稍后整理消除重复代码
+//
+//nolint:lll
+func (q *TongyiClient) CreateAudioCompletion(ctx context.Context, payload *qwen.Request[*qwen.AudioContentList], url string) (*AudioQwenResponse, error) {
+	payload = paylosdPreCheck(q, payload)
+	// Uploading URL...
+	// fmt.Println("upload audio...")
+	// /*
+	for _, acMsg := range payload.Input.Messages {
+		if acMsg.Role == "user" {
+			if tmpImageContent, hasAudio := acMsg.Content.PopAudioContent(); hasAudio {
+				var ossURL string
+				var err error
+				filepath := tmpImageContent.Audio
+
+				// TODO: 使用了 Image 的上传函数，需要修改
+				switch {
+				case strings.Contains(filepath, "dashscope.oss"):
+					ossURL = filepath
+				case strings.HasPrefix(filepath, "file://"):
+					filepath = strings.TrimPrefix(filepath, "file://")
+					ossURL, err = qwen.UploadLocalImg(ctx, filepath, payload.Model, q.token)
+				case strings.HasPrefix(filepath, "https://") || strings.HasPrefix(filepath, "http://"):
+					ossURL, err = qwen.UploadImgFromURL(ctx, filepath, payload.Model, q.token)
+				default:
+					return nil, ErrImageFilePrefix
+				}
+
+				if err != nil {
+					return nil, err
+				}
+				// TODO: QwenAudio 不能携带 X-DashScope-OssResourceResolve = enable, 报错问题待排查
+				// payload.HasUploadOss = true
+				// replace the image content with oss url
+				// fmt.Printf("after upload, ossURL: %s\n", ossURL)
+				acMsg.Content.SetAudio(ossURL)
+			}
+		}
+	}
+	// */
+
 	return genericCompletion(ctx, payload, q.httpCli, url, q.token)
 }
 

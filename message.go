@@ -5,14 +5,21 @@ import (
 )
 
 type (
-	TextInput        = qwen.Input[*qwen.TextContent]
-	VLInput          = qwen.Input[*qwen.VLContentList]
-	TextRequest      = qwen.Request[*qwen.TextContent]
-	VLRequest        = qwen.Request[*qwen.VLContentList]
-	TextQwenResponse = qwen.OutputResponse[*qwen.TextContent]
-	VLQwenResponse   = qwen.OutputResponse[*qwen.VLContentList]
-	TextMessage      = qwen.Message[*qwen.TextContent]
-	VLMessage        = qwen.Message[*qwen.VLContentList]
+	TextInput  = qwen.Input[*qwen.TextContent]
+	VLInput    = qwen.Input[*qwen.VLContentList]
+	AudioInput = qwen.Input[*qwen.AudioContentList]
+
+	TextRequest  = qwen.Request[*qwen.TextContent]
+	VLRequest    = qwen.Request[*qwen.VLContentList]
+	AudioRequest = qwen.Request[*qwen.AudioContentList]
+
+	TextQwenResponse  = qwen.OutputResponse[*qwen.TextContent]
+	VLQwenResponse    = qwen.OutputResponse[*qwen.VLContentList]
+	AudioQwenResponse = qwen.OutputResponse[*qwen.AudioContentList]
+
+	TextMessage  = qwen.Message[*qwen.TextContent]
+	VLMessage    = qwen.Message[*qwen.VLContentList]
+	AudioMessage = qwen.Message[*qwen.AudioContentList]
 )
 
 func NewQwenMessage[T qwen.IQwenContent](role string, content T) *qwen.Message[T] {

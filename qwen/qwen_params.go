@@ -4,6 +4,7 @@ const (
 	DashScopeBaseURL = "https://dashscope.aliyuncs.com/api"
 	QwenSubURL       = "/v1/services/aigc/text-generation/generation"
 	QwenVLSubURL     = "/v1/services/aigc/multimodal-generation/generation"
+	QwenAudioSubURL  = QwenVLSubURL
 )
 
 type ModelQwen = string
@@ -17,7 +18,8 @@ const (
 	QwenMaxLongContext ModelQwen = "qwen-max-longcontext"
 
 	// multi-modal model.
-	QwenVLPlus ModelQwen = "qwen-vl-plus"
+	QwenVLPlus     ModelQwen = "qwen-vl-plus"
+	QwenAudioTurbo ModelQwen = "qwen-audio-turbo"
 )
 
 // text-generation only.
@@ -28,6 +30,10 @@ func URLQwen() string {
 // multimodal.
 func URLQwenVL() string {
 	return DashScopeBaseURL + QwenVLSubURL
+}
+
+func URLQwenAudio() string {
+	return DashScopeBaseURL + QwenAudioSubURL
 }
 
 /*

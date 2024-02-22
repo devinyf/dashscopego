@@ -55,7 +55,6 @@ func TestUploadingImageFromURL(t *testing.T) {
 
 	ossFilePath, err := UploadImgFromURL(ctx, testImgURL, "qwen-vl-plus", apiKey)
 
-	// fmt.Println(ossFilePath)
 	require.NoError(t, err)
 	require.NotEmpty(t, ossFilePath)
 }
