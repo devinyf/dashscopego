@@ -7,7 +7,7 @@
 #### Examples:
 * [通义千问](#通义千问)
 * [通义千问VL(视觉理解模型)](#通义千问VL视觉理解模型)
-* 通义千问Audio(音频语言模型) TODO
+* [通义千问Audio(音频语言模型)](#通义千问Audio音频语言模型)
 * [通义万相(图像生成)](#通义万相图像生成)
 * [Paraformer(语音识别)](#Paraformer语音识别)
 * 模型插件调用 TODO
@@ -180,6 +180,60 @@ func main() {
 
 	fmt.Println("\nnon-stream result: ")
 	fmt.Println(resp.Output.Choices[0].Message.Content.ToString())
+}
+```
+
+### 通义千问Audio(音频语言模型)
+```go
+func main() {
+	model := qwen.QwenAudioTurbo
+	token := os.Getenv("DASHSCOPE_API_KEY")
+
+	if token == "" {
+		panic("token is empty")
+	}
+
+	cli := dashscopego.NewTongyiClient(model, token)
+
+	sysContent := qwen.AudioContentList{
+		{
+			Text: "You are a helpful assistant.",
+		},
+	}
+	userContent := qwen.AudioContentList{
+		{
+			Text: "这段音频在说什么", //nolint:gosmopolitan
+		},
+		{
+			Audio: "https://dashscope.oss-cn-beijing.aliyuncs.com/audios/2channel_16K.wav",
+		},
+	}
+
+	input := dashscopego.AudioInput{
+		Messages: []dashscopego.AudioMessage{
+			{Role: "system", Content: &sysContent},
+			{Role: "user", Content: &userContent},
+		},
+	}
+
+	// callback function:  print stream result
+	streamCallbackFn := func(ctx context.Context, chunk []byte) error {
+		log.Print(string(chunk))
+		return nil
+	}
+	req := &dashscopego.AudioRequest{
+		Input:       input,
+		StreamingFn: streamCallbackFn,
+	}
+
+	ctx := context.TODO()
+	resp, err := cli.CreateAudioCompletion(ctx, req, qwen.URLQwenAudio())
+	if err != nil {
+		panic(err)
+	}
+
+	log.Println("\nnon-stream result: ")
+	log.Println(resp.Output.Choices[0].Message.Content.ToString())
 }
 ```
 
