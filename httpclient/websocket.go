@@ -25,13 +25,12 @@ type IWsClient interface {
 	ConnClient(req interface{}) error
 	CloseClient() error
 	SendBinaryDates(data []byte)
-	ResultChans(<-chan WsMessage, <-chan error)
+	ResultChans(wsmsg <-chan WsMessage, err <-chan error)
 }
 
 // StartClient starts the client operation.
 func (c *WsClient) ConnClient(req interface{}) error {
 	if err := c.connect(); err != nil {
-		// log.Fatal("dial:", err)
 		return err
 	}
 

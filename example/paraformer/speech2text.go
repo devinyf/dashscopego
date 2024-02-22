@@ -3,7 +3,7 @@ package main
 import (
 	"bufio"
 	"context"
-	"fmt"
+	"log"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -23,7 +23,7 @@ func main() {
 	cli := dashscopego.NewTongyiClient(model, token)
 
 	streamCallbackFn := func(ctx context.Context, chunk []byte) error {
-		fmt.Print(string(chunk))
+		log.Print(string(chunk))
 		return nil
 	}
 
@@ -56,7 +56,9 @@ func main() {
 
 	reader := bufio.NewReader(voiceReader)
 
-	cli.CreateSpeechToTextGeneration(context.TODO(), req, reader)
+	if err := cli.CreateSpeechToTextGeneration(context.TODO(), req, reader); err != nil {
+		panic(err)
+	}
 
 	// 等待语音识别结果输出
 	time.Sleep(5 * time.Second)
@@ -71,14 +73,12 @@ func readAudioFromDesktop() *bufio.Reader {
 	}
 
 	voiceFilePath := filepath.Join(usr.HomeDir, "Desktop", "hello_world_female2.wav")
-	f, err := os.OpenFile(voiceFilePath, os.O_RDONLY, 0640)
-	if err != nil {
-		panic(err)
-	}
+
+	voice, err := os.OpenFile(voiceFilePath, os.O_RDONLY, 0640) //nolint:gofumpt
 	if err != nil {
 		panic(err)
 	}
 
-	reader := bufio.NewReader(f)
+	reader := bufio.NewReader(voice)
 	return reader
 }

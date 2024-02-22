@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	model := string(qwen.QwenVLPlus)
+	model := qwen.QwenVLPlus
 	token := os.Getenv("DASHSCOPE_API_KEY")
 
 	if token == "" {

@@ -10,14 +10,13 @@ import (
 	"github.com/google/uuid"
 )
 
-func ConnRecognitionClient(ctx context.Context, request *Request, token string) (*httpclient.WsClient, error) {
+func ConnRecognitionClient(request *Request, token string) (*httpclient.WsClient, error) {
 	// Initialize the client with the necessary parameters.
 	header := http.Header{}
 	header.Add("Authorization", token)
 
 	client := httpclient.NewWsClient(ParaformerWSURL, header)
 
-	log.Println("conn client...")
 	if err := client.ConnClient(request); err != nil {
 		return nil, err
 	}
@@ -39,10 +38,10 @@ type ResultWriter interface {
 	WriteResult(str string) error
 }
 
-func HandleRecognitionResult(cli *httpclient.WsClient, fn StreamingFunc) {
+func HandleRecognitionResult(ctx context.Context, cli *httpclient.WsClient, fn StreamingFunc) {
 	outputChan, errChan := cli.ResultChans()
-	ctx := context.Background()
 
+	// TODO: handle errors.
 BREAK_FOR:
 	for {
 		select {
@@ -53,14 +52,19 @@ BREAK_FOR:
 			}
 
 			// streaming callback func
-			fn(ctx, output.Data)
+			if err := fn(ctx, output.Data); err != nil {
+				log.Println("error: ", err)
+				break BREAK_FOR
+			}
 
 		case err := <-errChan:
 			if err != nil {
 				log.Println("error: ", err)
-				// TODO: raise error
 				break BREAK_FOR
 			}
+		case <-ctx.Done():
+			log.Println("Done")
+			break BREAK_FOR
 		}
 	}
 

@@ -127,22 +127,21 @@ func (q *TongyiClient) CreateVoiceFileToTextGeneration(ctx context.Context, requ
 }
 */
 
-// TODO: define the return Type
-func (q *TongyiClient) CreateSpeechToTextGeneration(ctx context.Context, request *paraformer.Request, reader *bufio.Reader) (any, error) {
+func (q *TongyiClient) CreateSpeechToTextGeneration(ctx context.Context, request *paraformer.Request, reader *bufio.Reader) error {
 	if request.Payload.Model == "" {
 		if q.Model == "" {
-			return nil, ErrModelNotSet
+			return ErrModelNotSet
 		}
 		request.Payload.Model = q.Model
 	}
 
-	wsCli, err := paraformer.ConnRecognitionClient(ctx, request, q.token)
+	wsCli, err := paraformer.ConnRecognitionClient(request, q.token)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	// handle response by stream callback
-	go paraformer.HandleRecognitionResult(wsCli, request.StreamingFn)
+	go paraformer.HandleRecognitionResult(ctx, wsCli, request.StreamingFn)
 
 	for {
 		// this buf can not be reused,
@@ -155,13 +154,13 @@ func (q *TongyiClient) CreateSpeechToTextGeneration(ctx context.Context, request
 		if errRead != nil {
 			log.Printf("read line error: %v\n", errRead)
 			err = errRead
-			return nil, err
+			return err
 		}
 
 		paraformer.SendRadioData(wsCli, buf)
 	}
 
-	return nil, nil
+	return nil
 }
 
 func (q *TongyiClient) CreateEmbedding(ctx context.Context, r *embedding.Request) ([][]float32, error) {
