@@ -1,47 +1,24 @@
-package main
+package paraformer
 
 import (
+	"context"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 
 	httpclient "github.com/devinyf/dashscopego/httpclient"
 	"github.com/google/uuid"
 )
 
-func ConnRecognitionClient() (*httpclient.WsClient, error) {
+func ConnRecognitionClient(ctx context.Context, request *Request, token string) (*httpclient.WsClient, error) {
 	// Initialize the client with the necessary parameters.
 	header := http.Header{}
-	header.Add("Authorization", os.Getenv("DASHSCOPE_API_KEY"))
-
-	headerPara := ReqHeader{
-		Streaming: "duplex",
-		TaskID:    generateTaskID(),
-		Action:    "run-task",
-	}
-	payload := PayloadIn{
-		Model: "paraformer-realtime-v1",
-		Parameters: Parameters{
-			// only support 16000 sample-rate now
-			SampleRate: 16000,
-			Format:     "pcm",
-		},
-		Input:     map[string]interface{}{},
-		Task:      "asr",
-		TaskGroup: "audio",
-		Function:  "recognition",
-	}
-
-	req := &Request{
-		Header:  headerPara,
-		Payload: payload,
-	}
+	header.Add("Authorization", token)
 
 	client := httpclient.NewWsClient(ParaformerWSURL, header)
 
 	log.Println("conn client...")
-	if err := client.ConnClient(req); err != nil {
+	if err := client.ConnClient(request); err != nil {
 		return nil, err
 	}
 
@@ -62,8 +39,9 @@ type ResultWriter interface {
 	WriteResult(str string) error
 }
 
-func HandleRecognitionResult(cli *httpclient.WsClient, writer ResultWriter) {
+func HandleRecognitionResult(cli *httpclient.WsClient, fn StreamingFunc) {
 	outputChan, errChan := cli.ResultChans()
+	ctx := context.Background()
 
 BREAK_FOR:
 	for {
@@ -74,11 +52,8 @@ BREAK_FOR:
 				break BREAK_FOR
 			}
 
-			// named pipe out to rust
-			err := writer.WriteResult(string(output.Data) + "\n")
-			if err != nil {
-				log.Printf("write result error: %v", err)
-			}
+			// streaming callback func
+			fn(ctx, output.Data)
 
 		case err := <-errChan:
 			if err != nil {
@@ -93,7 +68,7 @@ BREAK_FOR:
 }
 
 // task_id length 32.
-func generateTaskID() string {
+func GenerateTaskID() string {
 	u, err := uuid.NewUUID()
 	if err != nil {
 		panic(err)

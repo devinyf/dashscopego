@@ -1,13 +1,16 @@
 package dashscopego
 
 import (
+	"bufio"
 	"context"
+	"log"
 	"strings"
 
 	embedding "github.com/devinyf/dashscopego/embedding"
 	httpclient "github.com/devinyf/dashscopego/httpclient"
-	qwen "github.com/devinyf/dashscopego/qwen"
-	wanx "github.com/devinyf/dashscopego/wanx"
+	"github.com/devinyf/dashscopego/paraformer"
+	"github.com/devinyf/dashscopego/qwen"
+	"github.com/devinyf/dashscopego/wanx"
 )
 
 type TongyiClient struct {
@@ -108,6 +111,57 @@ func (q *TongyiClient) CreateImageGeneration(ctx context.Context, payload *wanx.
 		payload.Model = q.Model
 	}
 	return wanx.CreateImageGeneration(ctx, payload, q.httpCli, q.token)
+}
+
+/*
+func (q *TongyiClient) CreateVoiceFileToTextGeneration(ctx context.Context, request *paraformer.Request) (any, error) {
+	if request.Payload.Model == "" {
+		if q.Model == "" {
+			return nil, ErrModelNotSet
+		}
+		request.Payload.Model = q.Model
+	}
+
+	return
+	panic("not implemented")
+}
+*/
+
+// TODO: define the return Type
+func (q *TongyiClient) CreateSpeechToTextGeneration(ctx context.Context, request *paraformer.Request, reader *bufio.Reader) (any, error) {
+	if request.Payload.Model == "" {
+		if q.Model == "" {
+			return nil, ErrModelNotSet
+		}
+		request.Payload.Model = q.Model
+	}
+
+	wsCli, err := paraformer.ConnRecognitionClient(ctx, request, q.token)
+	if err != nil {
+		return nil, err
+	}
+
+	// handle response by stream callback
+	go paraformer.HandleRecognitionResult(wsCli, request.StreamingFn)
+
+	for {
+		// this buf can not be reused,
+		// otherwise the data will be overwritten, voice became disorder.
+		buf := make([]byte, 1024)
+		n, errRead := reader.Read(buf)
+		if n == 0 {
+			break
+		}
+		if errRead != nil {
+			log.Printf("read line error: %v\n", errRead)
+			err = errRead
+			return nil, err
+		}
+
+		paraformer.SendRadioData(wsCli, buf)
+	}
+
+	return nil, nil
 }
 
 func (q *TongyiClient) CreateEmbedding(ctx context.Context, r *embedding.Request) ([][]float32, error) {

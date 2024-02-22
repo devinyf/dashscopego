@@ -1,4 +1,6 @@
-package main
+package paraformer
+
+import "context"
 
 const ParaformerWSURL = "wss://dashscope.aliyuncs.com/api-ws/v1/inference"
 
@@ -7,9 +9,12 @@ type Parameters struct {
 	Format     string `json:"format"`
 }
 
+type StreamingFunc func(ctx context.Context, chunk []byte) error
+
 type Request struct {
-	Header  ReqHeader `json:"header"`
-	Payload PayloadIn `json:"payload"`
+	Header      ReqHeader     `json:"header"`
+	Payload     PayloadIn     `json:"payload"`
+	StreamingFn StreamingFunc `json:"-"`
 }
 
 type ReqHeader struct {

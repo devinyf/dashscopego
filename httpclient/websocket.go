@@ -21,6 +21,59 @@ const (
 	// maxMessageSize = 512.
 )
 
+type IWsClient interface {
+	ConnClient(req interface{}) error
+	CloseClient() error
+	SendBinaryDates(data []byte)
+	ResultChans(<-chan WsMessage, <-chan error)
+}
+
+// StartClient starts the client operation.
+func (c *WsClient) ConnClient(req interface{}) error {
+	if err := c.connect(); err != nil {
+		// log.Fatal("dial:", err)
+		return err
+	}
+
+	reqJSON, err := json.Marshal(req)
+	if err != nil {
+		return err
+	}
+	reqInput := WsMessage{
+		Type: websocket.TextMessage,
+		Data: reqJSON,
+	}
+
+	c.inputChan <- reqInput
+
+	err, ok := <-c.errChan
+	if ok && err != nil {
+		log.Println("error: ", err)
+	}
+	return nil
+}
+
+func (c *WsClient) CloseClient() error {
+	close(c.inputChan)
+	close(c.outputChan)
+	close(c.errChan)
+	c.Conn.Close()
+	return nil
+}
+
+func (c *WsClient) SendBinaryDates(data []byte) {
+	streamInput := WsMessage{
+		Type: websocket.BinaryMessage,
+		Data: data,
+	}
+
+	c.inputChan <- streamInput
+}
+
+func (c *WsClient) ResultChans() (<-chan WsMessage, <-chan error) {
+	return c.outputChan, c.errChan
+}
+
 type WsMessage struct {
 	// ws data type, e.g. websocket.TextMessage, websocket.BinaryMessage...
 	Type int
@@ -148,50 +201,4 @@ func (c *WsClient) connect() error {
 	go c.writePump()
 	go c.readPump()
 	return nil
-}
-
-// StartClient starts the client operation.
-func (c *WsClient) ConnClient(req interface{}) error {
-	if err := c.connect(); err != nil {
-		// log.Fatal("dial:", err)
-		return err
-	}
-
-	reqJSON, err := json.Marshal(req)
-	if err != nil {
-		return err
-	}
-	reqInput := WsMessage{
-		Type: websocket.TextMessage,
-		Data: reqJSON,
-	}
-
-	c.inputChan <- reqInput
-
-	err, ok := <-c.errChan
-	if ok && err != nil {
-		log.Println("error: ", err)
-	}
-	return nil
-}
-
-func (c *WsClient) CloseClient() error {
-	close(c.inputChan)
-	close(c.outputChan)
-	close(c.errChan)
-	c.Conn.Close()
-	return nil
-}
-
-func (c *WsClient) SendBinaryDates(data []byte) {
-	streamInput := WsMessage{
-		Type: websocket.BinaryMessage,
-		Data: data,
-	}
-
-	c.inputChan <- streamInput
-}
-
-func (c *WsClient) ResultChans() (<-chan WsMessage, <-chan error) {
-	return c.outputChan, c.errChan
 }

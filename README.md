@@ -6,7 +6,7 @@
 
 #### Examples:
 * [通义千问](#通义千问)
-* [通义千问VL(视觉理解大模型)](#通义千问vl视觉理解模型)
+* [通义千问VL(视觉理解模型)](#通义千问VL视觉理解模型)
 * 通义千问Audio(音频语言模型) TODO
 * [通义万相(文生图)](#通义万相文生图)
 * Paraformer(语音识别转文字) TODO
@@ -121,7 +121,7 @@ func saveImg2Desktop(fileType string, data []byte) {
 }
 ```
 
-### 通义千问VL(视觉理解大模型)
+### 通义千问VL(视觉理解模型)
  * P.S. 可以直接使用 图片本地路径 或 图片URL链接 但是目前还没有看到官方的HTTP接口文档, 这里暂时模拟了 dashscope python 库的实现步骤, 后续可能会做变更
 ```go
 func main() {
