@@ -30,6 +30,8 @@ func main() {
 			Text: "用唐诗体说明一下这张图片中的内容", //nolint:gosmopolitan
 		},
 		{
+			// Image: "https://pic.ntimg.cn/20140113/8800276_184351657000_2.jpg",
+			// Image: "file:///Users/xxxx/xxxx.png",
 			Image: "https://dashscope.oss-cn-beijing.aliyuncs.com/images/dog_and_girl.jpeg",
 		},
 	}

@@ -97,11 +97,13 @@ type Input[T IQwenContent] struct {
 type StreamingFunc func(ctx context.Context, chunk []byte) error
 
 type Request[T IQwenContent] struct {
-	Model        string        `json:"model"`
-	Input        Input[T]      `json:"input"`
-	Parameters   *Parameters   `json:"parameters,omitempty"`
-	StreamingFn  StreamingFunc `json:"-"`
-	HasUploadOss bool          `json:"-"`
+	Model      string      `json:"model"`
+	Input      Input[T]    `json:"input"`
+	Parameters *Parameters `json:"parameters,omitempty"`
+	// streaming callback function.
+	StreamingFn StreamingFunc `json:"-"`
+	// qwen-vl model need to upload image to oss for recognition.
+	HasUploadOss bool `json:"-"`
 }
 
 func (q *Request[T]) SetModel(value string) *Request[T] {

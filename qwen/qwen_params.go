@@ -6,7 +6,7 @@ const (
 	QwenVLSubURL     = "/v1/services/aigc/multimodal-generation/generation"
 )
 
-type ModelQwen string
+type ModelQwen = string
 
 const (
 	// text-generation model.

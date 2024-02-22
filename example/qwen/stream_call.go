@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	model := string(qwen.QwenTurbo)
+	model := qwen.QwenTurbo
 	token := os.Getenv("DASHSCOPE_API_KEY")
 
 	if token == "" {

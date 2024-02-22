@@ -15,7 +15,7 @@ import (
 )
 
 func main() {
-	model := string(wanx.WanxV1)
+	model := wanx.WanxV1
 	token := os.Getenv("DASHSCOPE_API_KEY")
 	if token == "" {
 		panic("token is empty")

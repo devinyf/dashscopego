@@ -8,7 +8,7 @@ const (
 	TaskURI           = "/api/v1/tasks/%s"
 )
 
-type ModelWanx string
+type ModelWanx = string
 
 const (
 	WanxV1             ModelWanx = "wanx-v1"

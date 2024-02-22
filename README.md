@@ -16,7 +16,7 @@ import (
 )
 
 func main() {
-	model := string(qwen.QwenTurbo)
+	model := qwen.QwenTurbo
 	token := os.Getenv("DASHSCOPE_API_KEY")
 
 	if token == "" {
@@ -54,10 +54,10 @@ func main() {
 }
 ```
 
-通义万相
+通义万相(文生图)
 ```go
 func main() {
-	model := string(wanx.WanxV1)
+	model := wanx.WanxV1
 	token := os.Getenv("DASHSCOPE_API_KEY")
 	if token == "" {
 		panic("token is empty")
@@ -112,9 +112,10 @@ func saveImg2Desktop(fileType string, data []byte) {
 ```
 
 通义千问VL(视觉理解大模型)
+ * P.S. 直接使用 本地图片路径 或 图片URL链接 目前非稳定实现, 还没有看官方文档指引, 这里暂时模拟了 dashscope python 库的实现, 后续可能会有变更
 ```go
 func main() {
-	model := string(qwen.QwenVLPlus)
+	model := qwen.QwenVLPlus
 	token := os.Getenv("DASHSCOPE_API_KEY")
 
 	if token == "" {
@@ -133,7 +134,12 @@ func main() {
 			Text: "用唐诗体描述一下这张图片中的内容",
 		},
 		{
+            // 官方文档的例子, oss 下载
 			Image: "https://dashscope.oss-cn-beijing.aliyuncs.com/images/dog_and_girl.jpeg",
+            // 使用 图片URL链接
+            // Image: "https://pic.ntimg.cn/20140113/8800276_184351657000_2.jpg",
+            // 本地图片
+            // Image: "file:///Users/xxxx/xxxx.png",
 		},
 	}
 
