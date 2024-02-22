@@ -2,9 +2,14 @@
 
 阿里云平台 dashscope api 的 golang 封装 (非官方)
 
+#### examples:
+* [通义千问](#通义千问)
+* [通义千问VL](#通义千问vl视觉理解大模型)
+* [通义万相](#通义万相文生图)
+
 开发中...
 
-通义千问
+### 通义千问
 ```go
 import (
 	"context"
@@ -54,7 +59,7 @@ func main() {
 }
 ```
 
-通义万相(文生图)
+### 通义万相(文生图)
 ```go
 func main() {
 	model := wanx.WanxV1
@@ -111,8 +116,8 @@ func saveImg2Desktop(fileType string, data []byte) {
 }
 ```
 
-通义千问VL(视觉理解大模型)
- * P.S. 直接使用 本地图片路径 或 图片URL链接 目前非稳定实现, 还没有看官方文档指引, 这里暂时模拟了 dashscope python 库的实现, 后续可能会有变更
+### 通义千问VL(视觉理解大模型)
+ * P.S. 直接使用 图片本地路径 或 图片URL链接 目前还没有看官方 HTTP接口文档, 这里暂时模拟了 dashscope python 库的实现步骤, 后续可能会做变更
 ```go
 func main() {
 	model := qwen.QwenVLPlus
@@ -170,7 +175,7 @@ func main() {
 	fmt.Println(resp.Output.Choices[0].Message.Content.ToString())
 }
 ```
-
-通义千问Audio TODO...
-
-Paraformer语音识别: TODO...
+### TODO...
+* 通义千问Audio(音频语言大模型)
+* Paraformer (语音识别转文字)
+* 模型插件调用(申请了试用,目前还没通过审核...)
