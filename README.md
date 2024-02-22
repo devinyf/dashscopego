@@ -2,10 +2,12 @@
 
 阿里云平台 dashscope api 的 golang 封装 (非官方)
 
-#### examples:
+[开通DashScope并创建API-KEY](https://help.aliyun.com/zh/dashscope/developer-reference/activate-dashscope-and-create-an-api-key)
+
+#### Examples:
 * [通义千问](#通义千问)
-* [通义千问VL(视觉理解大模型)](#通义千问vl视觉理解大模型)
-* 通义千问Audio(音频语音大模型) TODO
+* [通义千问VL(视觉理解大模型)](#通义千问vl视觉理解模型)
+* 通义千问Audio(音频语言模型) TODO
 * [通义万相(文生图)](#通义万相文生图)
 * Paraformer(语音识别转文字) TODO
 * 模型插件调用 TODO
@@ -41,7 +43,7 @@ func main() {
 		},
 	}
 
-	// callback function:  print stream result
+	// (可选 SSE开启) 需要流式输出时 通过该 Callback Function 获取结果
 	streamCallbackFn := func(ctx context.Context, chunk []byte) error {
 		fmt.Print(string(chunk))
 		return nil
@@ -120,7 +122,7 @@ func saveImg2Desktop(fileType string, data []byte) {
 ```
 
 ### 通义千问VL(视觉理解大模型)
- * P.S. 直接使用 图片本地路径 或 图片URL链接 目前还没有看官方 HTTP接口文档, 这里暂时模拟了 dashscope python 库的实现步骤, 后续可能会做变更
+ * P.S. 可以直接使用 图片本地路径 或 图片URL链接 但是目前还没有看到官方的HTTP接口文档, 这里暂时模拟了 dashscope python 库的实现步骤, 后续可能会做变更
 ```go
 func main() {
 	model := qwen.QwenVLPlus
@@ -158,7 +160,7 @@ func main() {
 		},
 	}
 
-	// callback function:  print stream result
+	// (可选 SSE开启)需要流式输出时 通过该 Callback Function 获取结果
 	streamCallbackFn := func(ctx context.Context, chunk []byte) error {
 		fmt.Print(string(chunk))
 		return nil
