@@ -162,8 +162,9 @@ func (c *WsClient) writePump() {
 				log.Printf("error: %v", err)
 			}
 
+			// TODO: 临时输出
 			if message.Type == websocket.TextMessage {
-				log.Printf("send start data-- err: %v\n", string(message.Data))
+				log.Printf("ws TextMessage: %v\n", string(message.Data))
 			}
 
 			if err := c.Conn.WriteMessage(message.Type, message.Data); err != nil {

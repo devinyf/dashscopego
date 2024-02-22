@@ -1,9 +1,13 @@
 package main
 
 import (
+	"bufio"
 	"context"
-	"log"
+	"fmt"
 	"os"
+	"os/user"
+	"path/filepath"
+	"time"
 
 	"github.com/devinyf/dashscopego"
 	"github.com/devinyf/dashscopego/paraformer"
@@ -18,9 +22,8 @@ func main() {
 
 	cli := dashscopego.NewTongyiClient(model, token)
 
-	// callback function:  print stream result
 	streamCallbackFn := func(ctx context.Context, chunk []byte) error {
-		log.Print(string(chunk))
+		fmt.Print(string(chunk))
 		return nil
 	}
 
@@ -32,7 +35,7 @@ func main() {
 
 	payload := paraformer.PayloadIn{
 		Parameters: paraformer.Parameters{
-			// seems like only support 16000 sample-rate now
+			// seems like only support 16000 sample-rate.
 			SampleRate: 16000,
 			Format:     "pcm",
 		},
@@ -48,6 +51,34 @@ func main() {
 		StreamingFn: streamCallbackFn,
 	}
 
-	cli.CreateSpeechToTextGeneration(context.TODO(), req)
+	// 声音获取 实际使用时请替换成实时音频流.
+	voiceReader := readAudioFromDesktop()
 
+	reader := bufio.NewReader(voiceReader)
+
+	cli.CreateSpeechToTextGeneration(context.TODO(), req, reader)
+
+	// 等待语音识别结果输出
+	time.Sleep(5 * time.Second)
+}
+
+// 读取音频文件中的录音 模拟实时语音流. 这里下载的官方文档中的示例音频文件.
+// `https://dashscope.oss-cn-beijing.aliyuncs.com/samples/audio/paraformer/hello_world_male2.wav`.
+func readAudioFromDesktop() *bufio.Reader {
+	usr, err := user.Current()
+	if err != nil {
+		panic(err)
+	}
+
+	voiceFilePath := filepath.Join(usr.HomeDir, "Desktop", "hello_world_female2.wav")
+	f, err := os.OpenFile(voiceFilePath, os.O_RDONLY, 0640)
+	if err != nil {
+		panic(err)
+	}
+	if err != nil {
+		panic(err)
+	}
+
+	reader := bufio.NewReader(f)
+	return reader
 }

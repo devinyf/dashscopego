@@ -9,7 +9,7 @@
 * [通义千问VL(视觉理解模型)](#通义千问VL视觉理解模型)
 * 通义千问Audio(音频语言模型) TODO
 * [通义万相(文生图)](#通义万相文生图)
-* Paraformer(语音识别转文字) TODO
+* [Paraformer(语音识别)](#Paraformer(语音识别))
 * 模型插件调用 TODO
 
 开发中...
@@ -122,7 +122,8 @@ func saveImg2Desktop(fileType string, data []byte) {
 ```
 
 ### 通义千问VL(视觉理解模型)
- * P.S. 可以直接使用 图片本地路径 或 图片URL链接 但是目前还没有看到官方的HTTP接口文档, 这里暂时模拟了 dashscope python 库的实现步骤, 后续可能会做变更
+ * Image 也可以直接使用 图片本地路径 或 图片URL链接的, 参照了 dashscope python 库的实现步骤 临时上传到 oss
+ * 其中上传图片到 oss 的步骤 在开发文档中还没有看到HTTP调用的例子, 所以后续可能会做变更
 ```go
 func main() {
 	model := qwen.QwenVLPlus
@@ -178,5 +179,95 @@ func main() {
 
 	fmt.Println("\nnon-stream result: ")
 	fmt.Println(resp.Output.Choices[0].Message.Content.ToString())
+}
+```
+
+### Paraformer(语音识别)
+* 开发文档中 还没有看到 HTTP调用说明, 参照 dashscope python 库中的步骤实现, 将来可能会有变更
+* 参数中的: SampleRate 好像目前仅支持 16000, 使用真实录音要留意录音设备的 sample_rate 是与之否匹配
+```go
+package main
+
+import (
+	"bufio"
+	"context"
+	"fmt"
+	"os"
+	"os/user"
+	"path/filepath"
+	"time"
+
+	"github.com/devinyf/dashscopego"
+	"github.com/devinyf/dashscopego/paraformer"
+)
+
+func main() {
+	model := paraformer.ParaformerRealTimeV1
+	token := os.Getenv("DASHSCOPE_API_KEY")
+	if token == "" {
+		panic("token is empty")
+	}
+
+	cli := dashscopego.NewTongyiClient(model, token)
+
+	streamCallbackFn := func(ctx context.Context, chunk []byte) error {
+		fmt.Print(string(chunk))
+		return nil
+	}
+
+	headerPara := paraformer.ReqHeader{
+		Streaming: "duplex",
+		TaskID:    paraformer.GenerateTaskID(),
+		Action:    "run-task",
+	}
+
+	payload := paraformer.PayloadIn{
+		Parameters: paraformer.Parameters{
+			// seems like only support 16000 sample-rate.
+			SampleRate: 16000,
+			Format:     "pcm",
+		},
+		Input:     map[string]interface{}{},
+		Task:      "asr",
+		TaskGroup: "audio",
+		Function:  "recognition",
+	}
+
+	req := &paraformer.Request{
+		Header:      headerPara,
+		Payload:     payload,
+		StreamingFn: streamCallbackFn,
+	}
+
+	// 声音获取 实际使用时请替换成实时音频流.
+	voiceReader := readAudioFromDesktop()
+
+	reader := bufio.NewReader(voiceReader)
+
+	cli.CreateSpeechToTextGeneration(context.TODO(), req, reader)
+
+	// 等待语音识别结果输出
+	time.Sleep(5 * time.Second)
+}
+
+// 读取音频文件中的录音 模拟实时语音流. 这里下载的官方文档中的示例音频文件.
+// `https://dashscope.oss-cn-beijing.aliyuncs.com/samples/audio/paraformer/hello_world_male2.wav`.
+func readAudioFromDesktop() *bufio.Reader {
+	usr, err := user.Current()
+	if err != nil {
+		panic(err)
+	}
+
+	voiceFilePath := filepath.Join(usr.HomeDir, "Desktop", "hello_world_female2.wav")
+	f, err := os.OpenFile(voiceFilePath, os.O_RDONLY, 0640)
+	if err != nil {
+		panic(err)
+	}
+	if err != nil {
+		panic(err)
+	}
+
+	reader := bufio.NewReader(f)
+	return reader
 }
 ```
