@@ -44,22 +44,20 @@ func (q *TongyiClient) CreateCompletion(ctx context.Context, payload *qwen.Reque
 //nolint:lll
 func (q *TongyiClient) CreateVLCompletion(ctx context.Context, payload *qwen.Request[*qwen.VLContentList], url string) (*VLQwenResponse, error) {
 	payload = paylosdPreCheck(q, payload)
-	// Uploading URL...
-	// fmt.Println("upload images...")
-	for _, vMsg := range payload.Input.Messages {
-		if vMsg.Role == "user" {
-			if tmpImageContent, hasImg := vMsg.Content.PopImageContent(); hasImg {
-				filepath := tmpImageContent.Image
 
-				ossURL, hasUploadOss, err := checkIfNeedUploadFile(ctx, filepath, payload.Model, q.token)
-				if err != nil {
-					return nil, err
-				}
-				if hasUploadOss {
-					payload.HasUploadOss = true
-				}
-				vMsg.Content.SetImage(ossURL)
+	for _, vMsg := range payload.Input.Messages {
+		tmpImageContent, hasImg := vMsg.Content.PopImageContent()
+		if hasImg && vMsg.Role == "user" {
+			filepath := tmpImageContent.Image
+
+			ossURL, hasUploadOss, err := checkIfNeedUploadFile(ctx, filepath, payload.Model, q.token)
+			if err != nil {
+				return nil, err
 			}
+			if hasUploadOss {
+				payload.HasUploadOss = true
+			}
+			vMsg.Content.SetImage(ossURL)
 		}
 	}
 
@@ -70,20 +68,20 @@ func (q *TongyiClient) CreateVLCompletion(ctx context.Context, payload *qwen.Req
 func (q *TongyiClient) CreateAudioCompletion(ctx context.Context, payload *qwen.Request[*qwen.AudioContentList], url string) (*AudioQwenResponse, error) {
 	payload = paylosdPreCheck(q, payload)
 	for _, acMsg := range payload.Input.Messages {
-		if acMsg.Role == "user" {
-			if tmpAudioContent, hasAudio := acMsg.Content.PopAudioContent(); hasAudio {
-				filepath := tmpAudioContent.Audio
+		tmpAudioContent, hasAudio := acMsg.Content.PopAudioContent()
 
-				ossURL, hasUploadOss, err := checkIfNeedUploadFile(ctx, filepath, payload.Model, q.token)
-				if err != nil {
-					return nil, err
-				}
+		if hasAudio && acMsg.Role == "user" {
+			filepath := tmpAudioContent.Audio
 
-				if hasUploadOss {
-					payload.HasUploadOss = true
-				}
-				acMsg.Content.SetAudio(ossURL)
+			ossURL, hasUploadOss, err := checkIfNeedUploadFile(ctx, filepath, payload.Model, q.token)
+			if err != nil {
+				return nil, err
 			}
+
+			if hasUploadOss {
+				payload.HasUploadOss = true
+			}
+			acMsg.Content.SetAudio(ossURL)
 		}
 	}
 
