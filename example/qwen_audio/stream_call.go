@@ -26,7 +26,7 @@ func main() {
 	}
 	userContent := qwen.AudioContentList{
 		{
-			Text: "这段音频在说什么", //nolint:gosmopolitan
+			Text: "该段对话表达了什么观点? 详细分析该讲话者的语气,展现出什么样的情绪", //nolint:gosmopolitan
 		},
 		{
 			// 使用本地音频文件
