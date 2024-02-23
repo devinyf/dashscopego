@@ -29,6 +29,9 @@ func main() {
 			Text: "这段音频在说什么", //nolint:gosmopolitan
 		},
 		{
+			// 使用本地音频文件
+			// Audio: "file:///Users/xxx/Desktop/hello_world_female2.wav",
+			// 官方文档中的例子
 			Audio: "https://dashscope.oss-cn-beijing.aliyuncs.com/audios/2channel_16K.wav",
 		},
 	}

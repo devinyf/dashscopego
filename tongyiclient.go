@@ -45,32 +45,19 @@ func (q *TongyiClient) CreateCompletion(ctx context.Context, payload *qwen.Reque
 func (q *TongyiClient) CreateVLCompletion(ctx context.Context, payload *qwen.Request[*qwen.VLContentList], url string) (*VLQwenResponse, error) {
 	payload = paylosdPreCheck(q, payload)
 	// Uploading URL...
-	// TODO: will upload the same image multiple times when this in history messages
 	// fmt.Println("upload images...")
 	for _, vMsg := range payload.Input.Messages {
 		if vMsg.Role == "user" {
 			if tmpImageContent, hasImg := vMsg.Content.PopImageContent(); hasImg {
-				var ossURL string
-				var err error
 				filepath := tmpImageContent.Image
-				switch {
-				case strings.Contains(filepath, "dashscope.oss"):
-					ossURL = filepath
-				case strings.HasPrefix(filepath, "file://"):
-					filepath = strings.TrimPrefix(filepath, "file://")
-					ossURL, err = qwen.UploadLocalImg(ctx, filepath, payload.Model, q.token)
-				case strings.HasPrefix(filepath, "https://") || strings.HasPrefix(filepath, "http://"):
-					ossURL, err = qwen.UploadImgFromURL(ctx, filepath, payload.Model, q.token)
-				default:
-					return nil, ErrImageFilePrefix
-				}
 
+				ossURL, hasUploadOss, err := checkIfNeedUploadFile(ctx, filepath, payload.Model, q.token)
 				if err != nil {
 					return nil, err
 				}
-				payload.HasUploadOss = true
-				// replace the image content with oss url
-				// fmt.Printf("after upload, ossURL: %s\n", ossURL)
+				if hasUploadOss {
+					payload.HasUploadOss = true
+				}
 				vMsg.Content.SetImage(ossURL)
 			}
 		}
@@ -79,48 +66,53 @@ func (q *TongyiClient) CreateVLCompletion(ctx context.Context, payload *qwen.Req
 	return genericCompletion(ctx, payload, q.httpCli, url, q.token)
 }
 
-// TODO: COPY CreateVLCompletion 稍后整理消除重复代码
-//
 //nolint:lll
 func (q *TongyiClient) CreateAudioCompletion(ctx context.Context, payload *qwen.Request[*qwen.AudioContentList], url string) (*AudioQwenResponse, error) {
 	payload = paylosdPreCheck(q, payload)
-	// Uploading URL...
-	// fmt.Println("upload audio...")
-	// /*
 	for _, acMsg := range payload.Input.Messages {
 		if acMsg.Role == "user" {
-			if tmpImageContent, hasAudio := acMsg.Content.PopAudioContent(); hasAudio {
-				var ossURL string
-				var err error
-				filepath := tmpImageContent.Audio
+			if tmpAudioContent, hasAudio := acMsg.Content.PopAudioContent(); hasAudio {
+				filepath := tmpAudioContent.Audio
 
-				// TODO: 使用了 Image 的上传函数，需要修改
-				switch {
-				case strings.Contains(filepath, "dashscope.oss"):
-					ossURL = filepath
-				case strings.HasPrefix(filepath, "file://"):
-					filepath = strings.TrimPrefix(filepath, "file://")
-					ossURL, err = qwen.UploadLocalImg(ctx, filepath, payload.Model, q.token)
-				case strings.HasPrefix(filepath, "https://") || strings.HasPrefix(filepath, "http://"):
-					ossURL, err = qwen.UploadImgFromURL(ctx, filepath, payload.Model, q.token)
-				default:
-					return nil, ErrImageFilePrefix
-				}
-
+				ossURL, hasUploadOss, err := checkIfNeedUploadFile(ctx, filepath, payload.Model, q.token)
 				if err != nil {
 					return nil, err
 				}
-				// TODO: QwenAudio 不能携带 X-DashScope-OssResourceResolve = enable, 报错问题待排查
-				// payload.HasUploadOss = true
-				// replace the image content with oss url
-				// fmt.Printf("after upload, ossURL: %s\n", ossURL)
+
+				if hasUploadOss {
+					payload.HasUploadOss = true
+				}
 				acMsg.Content.SetAudio(ossURL)
 			}
 		}
 	}
-	// */
 
 	return genericCompletion(ctx, payload, q.httpCli, url, q.token)
+}
+
+func checkIfNeedUploadFile(ctx context.Context, filepath string, model, token string) (string, bool, error) {
+	var err error
+	var ossURL string
+	var hasUploadOss bool
+	switch {
+	case strings.Contains(filepath, "dashscope.oss"):
+		// 使用了官方案例中的格式(https://dashscope.oss...).
+		ossURL = filepath
+	case strings.HasPrefix(filepath, "oss://"):
+		// 已经在 oss 中的不必上传.
+		ossURL = filepath
+	case strings.HasPrefix(filepath, "file://"):
+		// 本地文件.
+		filepath = strings.TrimPrefix(filepath, "file://")
+		ossURL, err = qwen.UploadLocalFile(ctx, filepath, model, token)
+		hasUploadOss = true
+	case strings.HasPrefix(filepath, "https://") || strings.HasPrefix(filepath, "http://"):
+		// 文件的 URL 链接.
+		ossURL, err = qwen.UploadFileFromURL(ctx, filepath, model, token)
+		hasUploadOss = true
+	}
+
+	return ossURL, hasUploadOss, err
 }
 
 //nolint:lll

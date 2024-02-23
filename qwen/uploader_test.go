@@ -24,21 +24,30 @@ func TestGetUploadCertificate(t *testing.T) {
 	apiKey := getAPIKey(t)
 	ctx := context.TODO()
 
-	resp, err := getUploadCertificate(ctx, "qwen-vl-plus", apiKey)
+	modelCases := []string{
+		QwenVLPlus,
+		QwenAudioTurbo,
+	}
 
-	require.NoError(t, err)
-	require.NotNil(t, resp)
+	for _, model := range modelCases {
+		resp, err := getUploadCertificate(ctx, model, apiKey)
+
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+
+	}
 }
 
-// 	//  this local file is not exist for other user
+// // this local file is not exist for other user
 // func TestUploadingLocalImg(t *testing.T) {
 // 	t.Parallel()
 // 	ctx := context.TODO()
 
 // 	homePath := os.Getenv("HOME")
-// 	ossFilePath, err := UploadLocalImg(ctx, homePath+"/Downloads/dog_and_girl.jpeg", "qwen-vl-plus", os.Getenv("DASHSCOPE_API_KEY"))
+// 	// ossFilePath, err := UploadLocalFile(ctx, homePath+"/Downloads/dog_and_girl.jpeg", QwenVLPlus, os.Getenv("DASHSCOPE_API_KEY"))
+// 	ossFilePath, err := UploadLocalFile(ctx, homePath+"/Desktop/hello_world_female2.wav", QwenAudioTurbo, os.Getenv("DASHSCOPE_API_KEY"))
 
-// 	fmt.Println(ossFilePath)
+// 	t.Log(ossFilePath)
 // 	require.NoError(t, err)
 // 	require.NotEmpty(t, ossFilePath)
 // }
@@ -53,7 +62,7 @@ func TestUploadingImageFromURL(t *testing.T) {
 
 	ctx := context.TODO()
 
-	ossFilePath, err := UploadImgFromURL(ctx, testImgURL, "qwen-vl-plus", apiKey)
+	ossFilePath, err := UploadFileFromURL(ctx, testImgURL, "qwen-vl-plus", apiKey)
 
 	require.NoError(t, err)
 	require.NotEmpty(t, ossFilePath)

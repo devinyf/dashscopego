@@ -3,6 +3,7 @@ package qwen
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -19,6 +20,19 @@ import (
 type CertResponse struct {
 	RequestID string     `json:"request_id"`
 	Data      CertOutput `json:"data"`
+}
+
+func (c *CertResponse) JSONString() string {
+	if c == nil {
+		return ""
+	}
+
+	jsonByte, err := json.Marshal(c)
+	if err != nil {
+		return ""
+	}
+	return string(jsonByte)
+	// return c.RequestID
 }
 
 type CertOutput struct {
@@ -78,7 +92,7 @@ type UploadRequest struct {
 */
 
 // uploading local image to aliyun oss, a oss url will be returned.
-func UploadLocalImg(ctx context.Context, filePath, model, apiKey string) (string, error) {
+func UploadLocalFile(ctx context.Context, filePath, model, apiKey string) (string, error) {
 	fileBytes, mimeType, err := loadLocalFileWithMimeType(filePath)
 	if err != nil {
 		return "", err
@@ -86,21 +100,21 @@ func UploadLocalImg(ctx context.Context, filePath, model, apiKey string) (string
 
 	fileName := filepath.Base(filePath)
 
-	return uploadImg(ctx, fileBytes, fileName, mimeType, model, apiKey)
+	return uploadFIle(ctx, fileBytes, fileName, mimeType, model, apiKey)
 }
 
 // download and uploading a online image to aliyun oss, a oss url will be returned.
-func UploadImgFromURL(ctx context.Context, fileURL, model, apiKey string) (string, error) {
-	fileBytes, mimeType, err := downloadImageWithMimeType(fileURL)
+func UploadFileFromURL(ctx context.Context, fileURL, model, apiKey string) (string, error) {
+	fileBytes, mimeType, err := downloadFileWithMimeType(fileURL)
 	if err != nil {
 		return "", err
 	}
 	fileName := filepath.Base(fileURL)
 
-	return uploadImg(ctx, fileBytes, fileName, mimeType, model, apiKey)
+	return uploadFIle(ctx, fileBytes, fileName, mimeType, model, apiKey)
 }
 
-func uploadImg(ctx context.Context, fileBytes []byte, fileName, mimeType, model, apiKey string) (string, error) {
+func uploadFIle(ctx context.Context, fileBytes []byte, fileName, mimeType, model, apiKey string) (string, error) {
 	certInfo, err := getUploadCertificate(ctx, model, apiKey)
 	if err != nil {
 		return "", &WrapMessageError{Message: "upload Cert Error", Cause: err}
@@ -153,7 +167,7 @@ func loadLocalFileWithMimeType(filePath string) ([]byte, string, error) {
 	return imgBytes, mt.String(), nil
 }
 
-func downloadImageWithMimeType(url string) ([]byte, string, error) {
+func downloadFileWithMimeType(url string) ([]byte, string, error) {
 	resp, err := http.Get(url) //nolint:all
 	if err != nil {
 		return nil, "", &WrapMessageError{Message: "http get image Error", Cause: err}
