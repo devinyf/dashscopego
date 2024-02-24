@@ -1,5 +1,9 @@
 package qwen
 
+import (
+	"encoding/json"
+)
+
 // TextConent is used for text-generation only.
 type TextContent struct {
 	Text string
@@ -40,4 +44,13 @@ func (t *TextContent) SetImage(_ string) {
 
 func (t *TextContent) SetAudio(_ string) {
 	panic("TextContent does not support SetAudio")
+}
+
+// redifine MarshalJSON and UnmarshalJSON.
+func (t TextContent) MarshalJSON() ([]byte, error) {
+	return json.Marshal(t.Text)
+}
+
+func (t *TextContent) UnmarshalJSON(data []byte) error {
+	return json.Unmarshal(data, &t.Text)
 }
