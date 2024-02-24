@@ -19,7 +19,7 @@ func main() {
 
 	cli := dashscopego.NewTongyiClient(model, token)
 
-	content := qwen.TextContent("tell me a joke")
+	content := qwen.TextContent{Text: "tell me a joke"}
 
 	input := dashscopego.TextInput{
 		Messages: []dashscopego.TextMessage{

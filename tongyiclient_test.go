@@ -45,7 +45,7 @@ func TestBasic(t *testing.T) {
 
 	cli := newTongyiClient(t, "")
 
-	text := qwen.TextContent("Hello")
+	text := qwen.TextContent{Text: "Hello"}
 	input := TextInput{
 		Messages: []TextMessage{
 			{Role: "user", Content: &text},
@@ -69,7 +69,7 @@ func TestStreamingChunk(t *testing.T) {
 
 	cli := newTongyiClient(t, "qwen-turbo")
 
-	content := qwen.TextContent("Hello")
+	content := qwen.TextContent{Text: "Hello"}
 
 	input := TextInput{
 		Messages: []TextMessage{
@@ -216,7 +216,7 @@ func TestMockStreamingChunk(t *testing.T) {
 	cli := newMockClient(t, "qwen-turbo", ctrl, _mockAsyncFunc)
 
 	output := ""
-	text := qwen.TextContent("Hello")
+	text := qwen.TextContent{Text: "Hello"}
 	input := TextInput{
 		Messages: []TextMessage{
 			{Role: "user", Content: &text},
@@ -246,7 +246,7 @@ func TestMockBasic(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	cli := newMockClient(t, "qwen-turbo", ctrl, _mockSyncFunc)
-	text := qwen.TextContent("Hello")
+	text := qwen.TextContent{Text: "Hello"}
 	input := TextInput{
 		Messages: []TextMessage{
 			{Role: "user", Content: &text},
@@ -350,7 +350,7 @@ func _mockAsyncFunc(mockHTTPCli *httpclient.MockIHttpClient) {
 func _mockSyncFunc(mockHTTPCli *httpclient.MockIHttpClient) {
 	ctx := context.TODO()
 
-	text := qwen.TextContent("Hello! This is a mock message.")
+	text := qwen.TextContent{Text: "Hello! This is a mock message."}
 
 	mockResp := TextQwenResponse{
 		Output: qwen.Output[*qwen.TextContent]{

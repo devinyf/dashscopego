@@ -70,3 +70,7 @@ func (acList *AudioContentList) AppendText(s string) {
 	}
 	(*acList)[0].Text += s
 }
+
+func (acList *AudioContentList) SetImage(url string) {
+	panic("AudioContentList does not support SetImage")
+}

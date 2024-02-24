@@ -11,6 +11,7 @@
 * [通义万相(图像生成)](#通义万相图像生成)
 * [Paraformer(语音识别)](#Paraformer语音识别)
 * 模型插件调用 TODO
+* langchaingo Agent
 
 开发中...
 
@@ -35,7 +36,7 @@ func main() {
 
 	cli := dashscopego.NewTongyiClient(model, token)
 
-	content := qwen.TextContent("讲个冷笑话")
+	content := qwen.TextContent{Text: "讲个冷笑话"}
 
 	input := dashscopego.TextInput{
 		Messages: []dashscopego.TextMessage{

@@ -76,10 +76,10 @@ type ImageResponse struct {
 
 type ImgBlob struct {
 	//	types include: "image/png".
-	ImgType string
-	ImgURL  string
+	ImgType string `json:"img_type"`
+	ImgURL  string `json:"img_url"`
 	// Raw bytes for media formats.
-	Data []byte
+	Data []byte `json:"-"`
 }
 
 type TaskRequest struct {

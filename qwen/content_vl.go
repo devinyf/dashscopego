@@ -3,10 +3,14 @@ package qwen
 // VLContentList is used for multi-modal generation.
 type VLContentList []VLContent
 
+var _ IQwenContentMethods = &VLContentList{}
+
 type VLContent struct {
 	Image string `json:"image,omitempty"`
 	Text  string `json:"text,omitempty"`
 }
+
+var _ IQwenContentMethods = &VLContentList{}
 
 func NewVLContentList() *VLContentList {
 	vl := VLContentList(make([]VLContent, 0))
@@ -70,4 +74,8 @@ func (vlist *VLContentList) AppendText(s string) {
 		panic("VLContentList is nil or empty")
 	}
 	(*vlist)[0].Text += s
+}
+
+func (vlist *VLContentList) SetAudio(url string) {
+	panic("VLContentList does not support SetAudio")
 }
