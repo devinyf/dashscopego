@@ -41,8 +41,3 @@ func (t *TextContent) SetImage(_ string) {
 func (t *TextContent) SetAudio(_ string) {
 	panic("TextContent does not support SetAudio")
 }
-
-// func foo() {
-// 	a := &TextContent{}
-// 	fmt.Println(a)
-// }
