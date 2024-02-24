@@ -7,6 +7,7 @@ type IQwenContent interface {
 	IQwenContentMethods
 }
 
+// TODO: langchaingo 中有使用这个 interface, 稍后看看是否需要重新设计.
 type IQwenContentMethods interface {
 	ToBytes() []byte
 	ToString() string
