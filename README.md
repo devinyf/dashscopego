@@ -85,6 +85,7 @@ func main() {
 		Params: wanx.ImageSynthesisParams{
 			N: 1,
 		},
+		Download: true // 从 URL 下载图片
 	}
 	ctx := context.TODO()
 
@@ -94,6 +95,8 @@ func main() {
 	}
 
 	for _, blob := range imgBlobs {
+		// blob.Data 会在 request 中设置了 Download: true 时下载
+		// 否则使用 blob.ImgURL
 		saveImg2Desktop(blob.ImgType, blob.Data)
 	}
 }

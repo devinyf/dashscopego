@@ -42,9 +42,10 @@ type ImageSynthesisInput struct {
 }
 
 type ImageSynthesisRequest struct {
-	Model  string               `json:"model"`
-	Input  ImageSynthesisInput  `json:"input"`
-	Params ImageSynthesisParams `json:"parameters"`
+	Model    string               `json:"model"`
+	Input    ImageSynthesisInput  `json:"input"`
+	Params   ImageSynthesisParams `json:"parameters"`
+	Download bool                 `json:"-"`
 }
 
 type Output struct {
@@ -76,6 +77,7 @@ type ImageResponse struct {
 type ImgBlob struct {
 	//	types include: "image/png".
 	ImgType string
+	ImgURL  string
 	// Raw bytes for media formats.
 	Data []byte
 }

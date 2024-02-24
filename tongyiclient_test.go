@@ -193,6 +193,7 @@ func TestImageGeneration(t *testing.T) {
 		Input: wanx.ImageSynthesisInput{
 			Prompt: "A beautiful sunset",
 		},
+		Download: true,
 	}
 
 	imgBlobs, err := cli.CreateImageGeneration(ctx, req)
@@ -201,6 +202,7 @@ func TestImageGeneration(t *testing.T) {
 
 	for _, blob := range imgBlobs {
 		assert.NotEmpty(t, blob.Data)
+		assert.NotEmpty(t, blob.ImgURL)
 		assert.Equal(t, "image/png", blob.ImgType)
 	}
 }

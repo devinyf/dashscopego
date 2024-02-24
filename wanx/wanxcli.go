@@ -31,12 +31,21 @@ func CreateImageGeneration(ctx context.Context, payload *ImageSynthesisRequest, 
 
 	blobList := make([]*ImgBlob, 0, len(resp.Results))
 	for _, img := range resp.Results {
-		imgByte, err := httpcli.GetImage(ctx, img.URL, tokenOpt)
-		if err != nil {
-			return nil, err
+		tmpImgBlob := &ImgBlob{
+			ImgType: "image/png",
+			ImgURL:  img.URL,
 		}
 
-		blobList = append(blobList, &ImgBlob{Data: imgByte, ImgType: "image/png"})
+		if payload.Download {
+			imgByte, err := httpcli.GetImage(ctx, img.URL, tokenOpt)
+			if err != nil {
+				return nil, err
+			}
+
+			tmpImgBlob.Data = imgByte
+		}
+
+		blobList = append(blobList, tmpImgBlob)
 	}
 
 	return blobList, nil
