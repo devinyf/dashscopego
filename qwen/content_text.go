@@ -13,13 +13,11 @@ func NewTextContent() *TextContent {
 }
 
 func (t *TextContent) ToBytes() []byte {
-	str := (*t).Text
-	return []byte(str)
+	return []byte(t.Text)
 }
 
 func (t *TextContent) ToString() string {
-	str := (*t).Text
-	return string(str)
+	return t.Text
 }
 
 func (t *TextContent) SetText(text string) {
@@ -36,11 +34,11 @@ func (t *TextContent) AppendText(text string) {
 	t.Text += text
 }
 
-func (t *TextContent) SetImage(url string) {
+func (t *TextContent) SetImage(_ string) {
 	panic("TextContent does not support SetImage")
 }
 
-func (t *TextContent) SetAudio(url string) {
+func (t *TextContent) SetAudio(_ string) {
 	panic("TextContent does not support SetAudio")
 }
 

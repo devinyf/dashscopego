@@ -76,6 +76,6 @@ func (vlist *VLContentList) AppendText(s string) {
 	(*vlist)[0].Text += s
 }
 
-func (vlist *VLContentList) SetAudio(url string) {
+func (vlist *VLContentList) SetAudio(_ string) {
 	panic("VLContentList does not support SetAudio")
 }
