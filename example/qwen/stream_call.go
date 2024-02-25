@@ -38,7 +38,7 @@ func main() {
 	}
 
 	ctx := context.TODO()
-	resp, err := cli.CreateCompletion(ctx, req, qwen.URLQwen())
+	resp, err := cli.CreateCompletion(ctx, req)
 	if err != nil {
 		panic(err)
 	}

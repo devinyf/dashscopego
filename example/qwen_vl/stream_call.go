@@ -54,7 +54,7 @@ func main() {
 	}
 
 	ctx := context.TODO()
-	resp, err := cli.CreateVLCompletion(ctx, req, qwen.URLQwenVL())
+	resp, err := cli.CreateVLCompletion(ctx, req)
 	if err != nil {
 		panic(err)
 	}

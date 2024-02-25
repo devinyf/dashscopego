@@ -54,7 +54,7 @@ func main() {
 	}
 
 	ctx := context.TODO()
-	resp, err := cli.CreateAudioCompletion(ctx, req, qwen.URLQwenAudio())
+	resp, err := cli.CreateAudioCompletion(ctx, req)
 	if err != nil {
 		panic(err)
 	}

@@ -36,13 +36,13 @@ func newTongyiCLientWithHTTPCli(model string, token string, httpcli httpclient.I
 // maybe this can be change in the future.
 //
 // nolint:lll
-func (q *TongyiClient) CreateCompletion(ctx context.Context, payload *qwen.Request[*qwen.TextContent], url string) (*TextQwenResponse, error) {
+func (q *TongyiClient) CreateCompletion(ctx context.Context, payload *qwen.Request[*qwen.TextContent]) (*TextQwenResponse, error) {
 	payload = paylosdPreCheck(q, payload)
-	return genericCompletion(ctx, payload, q.httpCli, url, q.token)
+	return genericCompletion(ctx, payload, q.httpCli, qwen.URLQwen(), q.token)
 }
 
 //nolint:lll
-func (q *TongyiClient) CreateVLCompletion(ctx context.Context, payload *qwen.Request[*qwen.VLContentList], url string) (*VLQwenResponse, error) {
+func (q *TongyiClient) CreateVLCompletion(ctx context.Context, payload *qwen.Request[*qwen.VLContentList]) (*VLQwenResponse, error) {
 	payload = paylosdPreCheck(q, payload)
 
 	for _, vMsg := range payload.Input.Messages {
@@ -61,11 +61,11 @@ func (q *TongyiClient) CreateVLCompletion(ctx context.Context, payload *qwen.Req
 		}
 	}
 
-	return genericCompletion(ctx, payload, q.httpCli, url, q.token)
+	return genericCompletion(ctx, payload, q.httpCli, qwen.URLQwenVL(), q.token)
 }
 
 //nolint:lll
-func (q *TongyiClient) CreateAudioCompletion(ctx context.Context, payload *qwen.Request[*qwen.AudioContentList], url string) (*AudioQwenResponse, error) {
+func (q *TongyiClient) CreateAudioCompletion(ctx context.Context, payload *qwen.Request[*qwen.AudioContentList]) (*AudioQwenResponse, error) {
 	payload = paylosdPreCheck(q, payload)
 	for _, acMsg := range payload.Input.Messages {
 		tmpAudioContent, hasAudio := acMsg.Content.PopAudioContent()
@@ -85,7 +85,7 @@ func (q *TongyiClient) CreateAudioCompletion(ctx context.Context, payload *qwen.
 		}
 	}
 
-	return genericCompletion(ctx, payload, q.httpCli, url, q.token)
+	return genericCompletion(ctx, payload, q.httpCli, qwen.URLQwenVL(), q.token)
 }
 
 func checkIfNeedUploadFile(ctx context.Context, filepath string, model, token string) (string, bool, error) {

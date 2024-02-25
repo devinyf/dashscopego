@@ -55,7 +55,7 @@ func main() {
 	}
 
 	ctx := context.TODO()
-	resp, err := cli.CreateCompletion(ctx, req, qwen.URLQwen())
+	resp, err := cli.CreateCompletion(ctx, req)
 	if err != nil {
 		panic(err)
 	}
@@ -179,7 +179,7 @@ func main() {
 	}
 
 	ctx := context.TODO()
-	resp, err := cli.CreateVLCompletion(ctx, req, qwen.URLQwenVL())
+	resp, err := cli.CreateVLCompletion(ctx, req)
 	if err != nil {
 		panic(err)
 	}
@@ -237,7 +237,7 @@ func main() {
 	}
 
 	ctx := context.TODO()
-	resp, err := cli.CreateAudioCompletion(ctx, req, qwen.URLQwenAudio())
+	resp, err := cli.CreateAudioCompletion(ctx, req)
 	if err != nil {
 		panic(err)
 	}
