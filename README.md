@@ -250,6 +250,7 @@ func main() {
 ### Paraformer(语音识别)
 - [x] 实时语音识别API
 - [ ] 录音文件识别API
+
 Experimental:
 * 开发文档中 还没有看到 HTTP调用说明, 参照 dashscope python 库中的步骤实现, 将来可能会有变更
 * 参数中的: SampleRate 好像目前仅支持 16000, 使用真实录音要留意录音设备的 sample_rate 是与之否匹配
