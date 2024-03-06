@@ -11,8 +11,8 @@ import (
 
 var (
 	ErrEmptyResponse = errors.New("empty response")
-	ErrEmptyTaskID   = errors.New("task id is empty")
-	ErrTaskUnsuccess = errors.New("task is not success")
+	ErrEmptyTaskID   = errors.New("wanx task id is empty")
+	ErrTaskUnsuccess = errors.New("wanx task is not success")
 	ErrModelNotSet   = errors.New("model is not set")
 )
 

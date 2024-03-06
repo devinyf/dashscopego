@@ -152,12 +152,12 @@ func main() {
 			Text: "用唐诗体描述一下这张图片中的内容",
 		},
 		{
-            // 官方文档的例子, oss 下载
-			Image: "https://dashscope.oss-cn-beijing.aliyuncs.com/images/dog_and_girl.jpeg",
             // 使用 图片URL链接
             // Image: "https://pic.ntimg.cn/20140113/8800276_184351657000_2.jpg",
             // 本地图片
             // Image: "file:///Users/xxxx/xxxx.png",
+            // 官方文档的例子, oss 下载
+			Image: "https://dashscope.oss-cn-beijing.aliyuncs.com/images/dog_and_girl.jpeg",
 		},
 	}
 
