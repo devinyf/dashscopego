@@ -1,8 +1,12 @@
 ### dashscopego
 
 阿里云平台 dashscope api 的 golang 封装 (非官方)
-
 [开通DashScope并创建API-KEY](https://help.aliyun.com/zh/dashscope/developer-reference/activate-dashscope-and-create-an-api-key)
+
+Install:
+```sh
+go get -u github.com/devinyf/dashscopego
+```
 
 #### Examples:
 * [通义千问](#通义千问)
