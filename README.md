@@ -66,6 +66,11 @@ func main() {
 
 	fmt.Println("\nnon-stream result: ")
 	fmt.Println(resp.Output.Choices[0].Message.Content.ToString())
+
+	// 获取 request_id, finish_reason, token usage (流式输出也同样使用以下方法统一获取)
+	fmt.Println(resp.RequestID)
+	fmt.Println(resp.Output.Choices[0].FinishReason)
+	fmt.Println(resp.Usage.TotalTokens)
 }
 ```
 
