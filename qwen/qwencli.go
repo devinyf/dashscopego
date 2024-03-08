@@ -87,6 +87,10 @@ func iterateStreamChannel[T IQwenContent](ctx context.Context, channel <-chan St
 			choice.FinishReason = rspData.Output.Output.Choices[0].FinishReason
 
 			outputMessage.Output.Choices[0] = choice
+
+			if choice.FinishReason != "" && choice.FinishReason != "null" {
+				break
+			}
 		}
 	}
 
@@ -101,7 +105,7 @@ func asyncChatStreaming[T IQwenContent](
 	cli httpclient.IHttpClient,
 	url, token string,
 ) <-chan StreamOutput[T] {
-	chanBuffer := 100
+	chanBuffer := 1000
 	_respChunkChannel := make(chan StreamOutput[T], chanBuffer)
 
 	go func() {
