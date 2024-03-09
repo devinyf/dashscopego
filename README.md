@@ -1,6 +1,7 @@
 ### dashscopego
 
 阿里云平台 dashscope api 的 golang 封装 (非官方)
+
 [开通DashScope并创建API-KEY](https://help.aliyun.com/zh/dashscope/developer-reference/activate-dashscope-and-create-an-api-key)
 
 Install:
@@ -48,7 +49,8 @@ func main() {
 		},
 	}
 
-	// (可选 SSE开启) 需要流式输出时 通过该 Callback Function 获取结果
+	// (可选 SSE开启) 需要流式输出时 通过该 Callback Function 获取实时显示的结果
+	// 开启 SSE 时的 request_id/finish_reason/token usage 等信息在调用完成统一返回(resp)
 	streamCallbackFn := func(ctx context.Context, chunk []byte) error {
 		fmt.Print(string(chunk))
 		return nil
@@ -67,7 +69,7 @@ func main() {
 	fmt.Println("\nnon-stream result: ")
 	fmt.Println(resp.Output.Choices[0].Message.Content.ToString())
 
-	// 获取 request_id, finish_reason, token usage (流式输出也同样使用以下方法统一获取)
+	// request_id, finish_reason, token usage
 	fmt.Println(resp.RequestID)
 	fmt.Println(resp.Output.Choices[0].FinishReason)
 	fmt.Println(resp.Usage.TotalTokens)
