@@ -13,9 +13,9 @@ const (
 	EmbeddingAsyncV2 = "text-embedding-async-v2"
 )
 
-type EmbeddingTextType = string
+type TextType = string
 
 const (
-	TypeQuery    EmbeddingTextType = "query"
-	TypeDocument EmbeddingTextType = "document"
+	TypeQuery    TextType = "query"
+	TypeDocument TextType = "document"
 )
