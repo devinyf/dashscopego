@@ -1,0 +1,19 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "qwen",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "env": {
+                "DASHSCOPE_API_KEY": "sk-015014d1a9c44d739958b158f84650f3",
+            },
+            "program": "${workspaceFolder}/example/qwen/",
+            "cwd": "${workspaceFolder}/"
+        },
+    ]
+}

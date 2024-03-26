@@ -104,6 +104,8 @@ type Request[T IQwenContent] struct {
 	StreamingFn StreamingFunc `json:"-"`
 	// qwen-vl model need to upload image to oss for recognition.
 	HasUploadOss bool `json:"-"`
+	// plugin
+	Plugin string `json:"-"`
 }
 
 func (q *Request[T]) SetModel(value string) *Request[T] {

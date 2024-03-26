@@ -28,6 +28,10 @@ func SendMessage[T IQwenContent](ctx context.Context, payload *Request[T], cli h
 		header["X-DashScope-OssResourceResolve"] = "enable"
 	}
 
+	if payload.Plugin != "" {
+		header["X-DashScope-Plugin"] = payload.Plugin
+	}
+
 	headerOpt := httpclient.WithHeader(header)
 
 	err := cli.Post(ctx, url, payload, &resp, tokenOpt, headerOpt)
@@ -53,6 +57,10 @@ func SendMessageStream[T IQwenContent](ctx context.Context, payload *Request[T],
 
 	if payload.HasUploadOss {
 		header["X-DashScope-OssResourceResolve"] = "enable"
+	}
+
+	if payload.Plugin != "" {
+		header["X-DashScope-Plugin"] = payload.Plugin
 	}
 
 	responseChan := asyncChatStreaming(ctx, payload, header, cli, url, token)

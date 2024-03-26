@@ -19,7 +19,11 @@ func main() {
 
 	cli := dashscopego.NewTongyiClient(model, token)
 
-	content := qwen.TextContent{Text: "tell me a joke"}
+	// content := qwen.TextContent{Text: `[{"text": "告诉我番茄炒蛋的做法"}]`}
+	content := qwen.TextContent{
+		Text:  `[{"text": "总结文档"},{"file": "https://qianwen-res.oss-cn-beijing.aliyuncs.com/QWEN_TECHNICAL_REPORT.pdf"}]`,
+		IsRaw: true,
+	}
 
 	input := dashscopego.TextInput{
 		Messages: []dashscopego.TextMessage{
@@ -35,6 +39,8 @@ func main() {
 	req := &dashscopego.TextRequest{
 		Input:       input,
 		StreamingFn: streamCallbackFn,
+		Plugin:      `{"pdf_extracter":{}}`,
+		// HasUploadOss: true,
 	}
 
 	ctx := context.TODO()
