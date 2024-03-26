@@ -1,14 +1,16 @@
 package qwen
 
-// VLContentList is used for multi-modal generation.
-type VLContentList []VLContent
-
-var _ IQwenContentMethods = &VLContentList{}
-
 type VLContent struct {
 	Image string `json:"image,omitempty"`
 	Text  string `json:"text,omitempty"`
 }
+
+func (vc VLContent) GetBlob() string {
+	return vc.Image
+}
+
+// VLContentList is used for multi-modal generation.
+type VLContentList []VLContent
 
 var _ IQwenContentMethods = &VLContentList{}
 
@@ -38,7 +40,7 @@ func (vlist *VLContentList) SetText(s string) {
 	*vlist = append(*vlist, VLContent{Text: s})
 }
 
-func (vlist *VLContentList) SetImage(url string) {
+func (vlist *VLContentList) SetBlob(url string) {
 	if vlist == nil {
 		panic("VLContentList is nil or empty")
 	}
@@ -46,27 +48,12 @@ func (vlist *VLContentList) SetImage(url string) {
 }
 
 func (vlist *VLContentList) PopImageContent() (VLContent, bool) {
-	if vlist == nil {
-		panic("VLContentList is nil or empty")
-	}
+	blobContent, hasAudio := popBlobContent(vlist)
 
-	hasImage := false
-	for i, v := range *vlist {
-		if v.Image != "" {
-			hasImage = true
-			preSlice := (*vlist)[:i]
-			if i == len(*vlist)-1 {
-				*vlist = preSlice
-			} else {
-				postSlice := (*vlist)[i+1:]
-				*vlist = append(*vlist, preSlice...)
-				*vlist = append(*vlist, postSlice...)
-			}
-
-			return v, hasImage
-		}
+	if content, ok := blobContent.(VLContent); ok {
+		return content, hasAudio
 	}
-	return VLContent{}, hasImage
+	return VLContent{}, false
 }
 
 func (vlist *VLContentList) AppendText(s string) {
@@ -76,6 +63,14 @@ func (vlist *VLContentList) AppendText(s string) {
 	(*vlist)[0].Text += s
 }
 
-func (vlist *VLContentList) SetAudio(_ string) {
-	panic("VLContentList does not support SetAudio")
+func (vlist *VLContentList) ConvertToBlobList() []IBlobContent {
+	if vlist == nil {
+		panic("VLContentList is nil or empty")
+	}
+
+	list := make([]IBlobContent, len(*vlist))
+	for i, v := range *vlist {
+		list[i] = v
+	}
+	return list
 }

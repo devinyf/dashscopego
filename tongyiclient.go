@@ -57,7 +57,7 @@ func (q *TongyiClient) CreateVLCompletion(ctx context.Context, payload *qwen.Req
 			if hasUploadOss {
 				payload.HasUploadOss = true
 			}
-			vMsg.Content.SetImage(ossURL)
+			vMsg.Content.SetBlob(ossURL)
 		}
 	}
 
@@ -81,7 +81,7 @@ func (q *TongyiClient) CreateAudioCompletion(ctx context.Context, payload *qwen.
 			if hasUploadOss {
 				payload.HasUploadOss = true
 			}
-			acMsg.Content.SetAudio(ossURL)
+			acMsg.Content.SetBlob(ossURL)
 		}
 	}
 

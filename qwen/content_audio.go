@@ -5,7 +5,14 @@ type AudioContent struct {
 	Text  string `json:"text,omitempty"`
 }
 
+func (ac AudioContent) GetBlob() string {
+	return ac.Audio
+}
+
+// AudioContentList is used for multi-modal generation.
 type AudioContentList []AudioContent
+
+var _ IQwenContentMethods = &AudioContentList{}
 
 func NewAudioContentList() *AudioContentList {
 	ac := AudioContentList(make([]AudioContent, 0))
@@ -33,37 +40,6 @@ func (acList *AudioContentList) SetText(s string) {
 	*acList = append(*acList, AudioContent{Text: s})
 }
 
-func (acList *AudioContentList) SetAudio(url string) {
-	if acList == nil {
-		panic("AudioContentList is nil or empty")
-	}
-	*acList = append(*acList, AudioContent{Audio: url})
-}
-
-func (acList *AudioContentList) PopAudioContent() (AudioContent, bool) {
-	if acList == nil {
-		panic("AudioContentList is nil or empty")
-	}
-
-	hasAudio := false
-	for i, v := range *acList {
-		if v.Audio != "" {
-			hasAudio = true
-			preSlice := (*acList)[:i]
-			if i == len(*acList)-1 {
-				*acList = preSlice
-			} else {
-				postSlice := (*acList)[i+1:]
-				*acList = append(*acList, preSlice...)
-				*acList = append(*acList, postSlice...)
-			}
-
-			return v, hasAudio
-		}
-	}
-	return AudioContent{}, hasAudio
-}
-
 func (acList *AudioContentList) AppendText(s string) {
 	if acList == nil || len(*acList) == 0 {
 		panic("AudioContentList is nil or empty")
@@ -71,6 +47,31 @@ func (acList *AudioContentList) AppendText(s string) {
 	(*acList)[0].Text += s
 }
 
-func (acList *AudioContentList) SetImage(_ string) {
-	panic("AudioContentList does not support SetImage")
+func (acList *AudioContentList) SetBlob(url string) {
+	if acList == nil {
+		panic("AudioContentList is nil or empty")
+	}
+	*acList = append(*acList, AudioContent{Audio: url})
+}
+
+func (acList *AudioContentList) PopAudioContent() (AudioContent, bool) {
+	blobContent, hasAudio := popBlobContent(acList)
+
+	if content, ok := blobContent.(AudioContent); ok {
+		return content, hasAudio
+	}
+
+	return AudioContent{}, false
+}
+
+func (acList *AudioContentList) ConvertToBlobList() []IBlobContent {
+	if acList == nil {
+		panic("VLContentList is nil or empty")
+	}
+
+	list := make([]IBlobContent, len(*acList))
+	for i, v := range *acList {
+		list[i] = v
+	}
+	return list
 }

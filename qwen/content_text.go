@@ -38,13 +38,17 @@ func (t *TextContent) AppendText(text string) {
 	t.Text += text
 }
 
-func (t *TextContent) SetImage(_ string) {
-	panic("TextContent does not support SetImage")
+func (t *TextContent) SetBlob(_ string) {
+	panic("TextContent does not support SetBlob")
 }
 
-func (t *TextContent) SetAudio(_ string) {
-	panic("TextContent does not support SetAudio")
-}
+// func (t *TextContent) SetImage(_ string) {
+// 	panic("TextContent does not support SetImage")
+// }
+
+// func (t *TextContent) SetAudio(_ string) {
+// 	panic("TextContent does not support SetAudio")
+// }
 
 // redifine MarshalJSON and UnmarshalJSON.
 func (t TextContent) MarshalJSON() ([]byte, error) {
