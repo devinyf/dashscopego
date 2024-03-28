@@ -40,6 +40,10 @@ func (vlist *VLContentList) SetText(s string) {
 	*vlist = append(*vlist, VLContent{Text: s})
 }
 
+func (vlist *VLContentList) SetImage(url string) {
+	vlist.SetBlob(url)
+}
+
 func (vlist *VLContentList) SetBlob(url string) {
 	if vlist == nil {
 		panic("VLContentList is nil or empty")

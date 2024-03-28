@@ -57,7 +57,7 @@ func (q *TongyiClient) CreateVLCompletion(ctx context.Context, payload *qwen.Req
 			if hasUploadOss {
 				payload.HasUploadOss = true
 			}
-			vMsg.Content.SetBlob(ossURL)
+			vMsg.Content.SetImage(ossURL)
 		}
 	}
 
@@ -81,11 +81,36 @@ func (q *TongyiClient) CreateAudioCompletion(ctx context.Context, payload *qwen.
 			if hasUploadOss {
 				payload.HasUploadOss = true
 			}
-			acMsg.Content.SetBlob(ossURL)
+			acMsg.Content.SetAudio(ossURL)
 		}
 	}
 
 	return genericCompletion(ctx, payload, q.httpCli, qwen.URLQwenVL(), q.token)
+}
+
+// used for pdf_extracter plugin.
+//
+//nolint:lll
+func (q *TongyiClient) CreateFileCompletion(ctx context.Context, payload *qwen.Request[*qwen.FileContentList]) (*FileQwenResponse, error) {
+	payload = paylosdPreCheck(q, payload)
+
+	for _, vMsg := range payload.Input.Messages {
+		tmpImageContent, hasImg := vMsg.Content.PopFileContent()
+		if hasImg && vMsg.Role == "user" {
+			filepath := tmpImageContent.File
+
+			ossURL, hasUploadOss, err := checkIfNeedUploadFile(ctx, filepath, payload.Model, q.token)
+			if err != nil {
+				return nil, err
+			}
+			if hasUploadOss {
+				payload.HasUploadOss = true
+			}
+			vMsg.Content.SetFile(ossURL)
+		}
+	}
+
+	return genericCompletion(ctx, payload, q.httpCli, qwen.URLQwen(), q.token)
 }
 
 func checkIfNeedUploadFile(ctx context.Context, filepath string, model, token string) (string, bool, error) {

@@ -40,6 +40,10 @@ func (fclist *FileContentList) SetText(s string) {
 	*fclist = append(*fclist, FileContent{Text: s})
 }
 
+func (fclist *FileContentList) SetFile(url string) {
+	fclist.SetBlob(url)
+}
+
 func (fclist *FileContentList) SetBlob(url string) {
 	if fclist == nil {
 		panic("FileContentList is nil or empty")

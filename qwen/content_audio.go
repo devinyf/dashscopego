@@ -47,6 +47,10 @@ func (acList *AudioContentList) AppendText(s string) {
 	(*acList)[0].Text += s
 }
 
+func (acList *AudioContentList) SetAudio(url string) {
+	acList.SetBlob(url)
+}
+
 func (acList *AudioContentList) SetBlob(url string) {
 	if acList == nil {
 		panic("AudioContentList is nil or empty")
