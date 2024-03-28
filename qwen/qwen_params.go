@@ -36,6 +36,13 @@ func URLQwenAudio() string {
 	return DashScopeBaseURL + QwenAudioSubURL
 }
 
+type RoleType = string
+
+const (
+	RoleSystem RoleType = "system"
+	RoleUser   RoleType = "user"
+)
+
 /*
 func ChoseModelQwen(model string) ModelQwen {
 	m := Model{}

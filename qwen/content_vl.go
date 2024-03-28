@@ -5,6 +5,8 @@ type VLContent struct {
 	Text  string `json:"text,omitempty"`
 }
 
+var _ IBlobContent = VLContent{}
+
 func (vc VLContent) GetBlob() string {
 	return vc.Image
 }

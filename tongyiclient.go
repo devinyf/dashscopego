@@ -47,7 +47,7 @@ func (q *TongyiClient) CreateVLCompletion(ctx context.Context, payload *qwen.Req
 
 	for _, vMsg := range payload.Input.Messages {
 		tmpImageContent, hasImg := vMsg.Content.PopImageContent()
-		if hasImg && vMsg.Role == "user" {
+		if hasImg && vMsg.Role == qwen.RoleUser {
 			filepath := tmpImageContent.Image
 
 			ossURL, hasUploadOss, err := checkIfNeedUploadFile(ctx, filepath, payload.Model, q.token)
@@ -70,7 +70,7 @@ func (q *TongyiClient) CreateAudioCompletion(ctx context.Context, payload *qwen.
 	for _, acMsg := range payload.Input.Messages {
 		tmpAudioContent, hasAudio := acMsg.Content.PopAudioContent()
 
-		if hasAudio && acMsg.Role == "user" {
+		if hasAudio && acMsg.Role == qwen.RoleUser {
 			filepath := tmpAudioContent.Audio
 
 			ossURL, hasUploadOss, err := checkIfNeedUploadFile(ctx, filepath, payload.Model, q.token)
@@ -96,7 +96,7 @@ func (q *TongyiClient) CreateFileCompletion(ctx context.Context, payload *qwen.R
 
 	for _, vMsg := range payload.Input.Messages {
 		tmpImageContent, hasImg := vMsg.Content.PopFileContent()
-		if hasImg && vMsg.Role == "user" {
+		if hasImg && vMsg.Role == qwen.RoleUser {
 			filepath := tmpImageContent.File
 
 			ossURL, hasUploadOss, err := checkIfNeedUploadFile(ctx, filepath, payload.Model, q.token)

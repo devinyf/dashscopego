@@ -38,8 +38,8 @@ func main() {
 
 	input := dashscopego.VLInput{
 		Messages: []dashscopego.VLMessage{
-			{Role: "system", Content: &sysContent},
-			{Role: "user", Content: &userContent},
+			{Role: qwen.RoleSystem, Content: &sysContent},
+			{Role: qwen.RoleUser, Content: &userContent},
 		},
 	}
 

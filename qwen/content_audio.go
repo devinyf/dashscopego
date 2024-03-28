@@ -5,6 +5,8 @@ type AudioContent struct {
 	Text  string `json:"text,omitempty"`
 }
 
+var _ IBlobContent = AudioContent{}
+
 func (ac AudioContent) GetBlob() string {
 	return ac.Audio
 }

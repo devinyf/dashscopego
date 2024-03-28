@@ -21,13 +21,6 @@ type IBlobContent interface {
 	GetBlob() string
 }
 
-var _ IBlobContent = AudioContent{}
-var _ IBlobContent = VLContent{}
-
-// type IBlobContentList interface {
-// 	[]AudioContent | []VLContent
-// }
-
 type IBlobListConvert interface {
 	ConvertToBlobList() []IBlobContent
 }
@@ -35,7 +28,6 @@ type IBlobListConvert interface {
 func popBlobContent(rawList IBlobListConvert) (IBlobContent, bool) {
 	list := rawList.ConvertToBlobList()
 	return innerGetBlob(&list)
-
 }
 
 func innerGetBlob(list *[]IBlobContent) (IBlobContent, bool) {

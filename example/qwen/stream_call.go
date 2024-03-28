@@ -23,7 +23,7 @@ func main() {
 
 	input := dashscopego.TextInput{
 		Messages: []dashscopego.TextMessage{
-			{Role: "user", Content: &content},
+			{Role: qwen.RoleUser, Content: &content},
 		},
 	}
 
