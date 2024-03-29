@@ -181,6 +181,42 @@ func TestVLStreamChund(t *testing.T) {
 	assert.Regexp(t, "dog|person|individual|woman|girl", strings.ToLower(output))
 }
 
+func TestPdfExtracterPlugin(t *testing.T) {
+	t.Parallel()
+	ctx := context.TODO()
+
+	cli := newTongyiClient(t, "qwen-turbo")
+
+	content := qwen.FileContentList{
+		{
+			Text: "总结该文件信息",
+		},
+		{
+			File: "https://qianwen-res.oss-cn-beijing.aliyuncs.com/QWEN_TECHNICAL_REPORT.pdf",
+		},
+	}
+
+	input := FileInput{
+		Messages: []FileMessage{
+			{Role: qwen.RoleUser, Content: &content},
+		},
+	}
+
+	req := &FileRequest{
+		Model:  "qwen-turbo",
+		Input:  input,
+		Plugin: qwen.Plugins{"pdf_extracter": {}},
+	}
+
+	resp, err := cli.CreateFileCompletion(ctx, req)
+	require.NoError(t, err)
+
+	outputText := resp.Output.Choices[0].Message.Content.ToString()
+
+	assert.NotEmpty(t, outputText)
+	assert.Regexp(t, "Qwen|阿里巴巴|模型|人工智能", outputText)
+}
+
 //nolint:all
 /* TODO: this test case too slow.
 func TestImageGeneration(t *testing.T) {
