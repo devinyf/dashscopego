@@ -39,8 +39,10 @@ func URLQwenAudio() string {
 type RoleType = string
 
 const (
-	RoleSystem RoleType = "system"
-	RoleUser   RoleType = "user"
+	RoleSystem    RoleType = "system"
+	RoleUser      RoleType = "user"
+	RoleAssistant RoleType = "assistant"
+	RolePlugin    RoleType = "plugin"
 )
 
 /*

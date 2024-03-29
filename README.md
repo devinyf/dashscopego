@@ -26,7 +26,7 @@ go get -u github.com/devinyf/dashscopego
 - [x] [pdf解析](./example/qwen_plugins/pdf_extracter/main.go)
 - [ ] 计算器
 - [ ] 图片生成
-- [ ] Python代码解释器
+- [x] [Python代码解释器](./example/qwen_plugins/code_interpreter/main.go)
 - [ ] 自定义plugin-example
 #### langchaingo-Agent 
 - TODO...
