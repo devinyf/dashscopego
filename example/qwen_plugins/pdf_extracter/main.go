@@ -28,8 +28,8 @@ func main() {
 	}
 
 	// 比亚迪财报
-	pdf_file_path := filepath.Join(usr.HomeDir, "Downloads", "financial_results_byd.pdf")
-	file_path := fmt.Sprintf("file://%s", pdf_file_path)
+	pdfFile := filepath.Join(usr.HomeDir, "Downloads", "financial_results_byd.pdf")
+	filePath := fmt.Sprintf("file://%s", pdfFile)
 
 	content := qwen.FileContentList{
 		{
@@ -37,7 +37,7 @@ func main() {
 		},
 		{
 			// File: "https://qianwen-res.oss-cn-beijing.aliyuncs.com/QWEN_TECHNICAL_REPORT.pdf",
-			File: file_path,
+			File: filePath,
 		},
 	}
 

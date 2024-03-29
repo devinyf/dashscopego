@@ -100,7 +100,10 @@ type StreamingFunc func(ctx context.Context, chunk []byte) error
 type Plugins map[string]map[string]any
 
 func (p Plugins) toString() string {
-	b, _ := json.Marshal(p)
+	b, err := json.Marshal(p)
+	if err != nil {
+		return err.Error()
+	}
 	return string(b)
 }
 

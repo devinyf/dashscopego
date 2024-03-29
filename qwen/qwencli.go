@@ -63,8 +63,6 @@ func SendMessageStream[T IQwenContent, U IQwenContent](ctx context.Context, payl
 		header["X-DashScope-Plugin"] = payload.Plugin.toString()
 	}
 
-	fmt.Println("debug... header: ", header)
-
 	responseChan := asyncChatStreaming[T, U](ctx, payload, header, cli, url, token)
 
 	return iterateStreamChannel(ctx, responseChan, payload.StreamingFn)
