@@ -203,9 +203,9 @@ func TestPdfExtracterPlugin(t *testing.T) {
 	}
 
 	req := &FileRequest{
-		Model:  "qwen-turbo",
-		Input:  input,
-		Plugin: qwen.Plugins{"pdf_extracter": {}},
+		Model:   "qwen-turbo",
+		Input:   input,
+		Plugins: qwen.Plugins{"pdf_extracter": {}},
 	}
 
 	resp, err := cli.CreateFileCompletion(ctx, req)

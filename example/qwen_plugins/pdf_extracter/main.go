@@ -55,7 +55,7 @@ func main() {
 	req := &dashscopego.FileRequest{
 		Input:       input,
 		StreamingFn: streamCallbackFn,
-		Plugin:      qwen.Plugins{"pdf_extracter": {}},
+		Plugins:     qwen.Plugins{qwen.PluginPDFExtracter: {}},
 	}
 
 	ctx := context.TODO()

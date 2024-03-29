@@ -123,6 +123,11 @@ func (p Plugins) toString() string {
 	return string(b)
 }
 
+const (
+	PluginCodeInterpreter = "code_interpreter"
+	PluginPDFExtracter    = "pdf_extracter"
+)
+
 type Request[T IQwenContent] struct {
 	Model      string      `json:"model"`
 	Input      Input[T]    `json:"input"`
@@ -132,7 +137,7 @@ type Request[T IQwenContent] struct {
 	// qwen-vl model need to upload image to oss for recognition.
 	HasUploadOss bool `json:"-"`
 	// plugin
-	Plugin Plugins `json:"-"`
+	Plugins Plugins `json:"-"`
 }
 
 func (q *Request[T]) SetModel(value string) *Request[T] {

@@ -43,7 +43,7 @@ func main() {
 	req := &dashscopego.TextRequest{
 		Input: input,
 		// StreamingFn: streamCallbackFn,
-		Plugin: qwen.Plugins{"code_interpreter": {}},
+		Plugins: qwen.Plugins{qwen.PluginCodeInterpreter: {}},
 	}
 
 	ctx := context.TODO()
