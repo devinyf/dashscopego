@@ -18,7 +18,7 @@ type (
 	TextQwenResponse  = qwen.OutputResponse[*qwen.TextContent]
 	VLQwenResponse    = qwen.OutputResponse[*qwen.VLContentList]
 	AudioQwenResponse = qwen.OutputResponse[*qwen.AudioContentList]
-	FileQwenResponse  = qwen.OutputResponse[*qwen.FileContentList]
+	FileQwenResponse  = qwen.OutputResponse[*qwen.TextContent] // PDF 文件解析返回的是纯文本格式.
 
 	TextMessage  = qwen.Message[*qwen.TextContent]
 	VLMessage    = qwen.Message[*qwen.VLContentList]

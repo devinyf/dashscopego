@@ -15,7 +15,7 @@ go get -u github.com/devinyf/dashscopego
 * [通义千问Audio(音频语言模型)](#通义千问Audio音频语言模型)
 * [通义万相(图像生成)](#通义万相图像生成)
 * [Paraformer(语音识别)](#Paraformer语音识别)
-* 模型插件调用 TODO
+* [模型插件调用](./example/qwen_plugins/)
 * langchaingo Agent TODO
 
 开发中...

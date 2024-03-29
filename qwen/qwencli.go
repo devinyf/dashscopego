@@ -13,12 +13,12 @@ import (
 )
 
 //nolint:lll
-func SendMessage[T IQwenContent](ctx context.Context, payload *Request[T], cli httpclient.IHttpClient, url, token string) (*OutputResponse[T], error) {
+func SendMessage[T IQwenContent, U IQwenContent](ctx context.Context, payload *Request[T], cli httpclient.IHttpClient, url, token string) (*OutputResponse[U], error) {
 	if payload.Model == "" {
 		return nil, ErrModelNotSet
 	}
 
-	resp := OutputResponse[T]{}
+	resp := OutputResponse[U]{}
 	tokenOpt := httpclient.WithTokenHeaderOption(token)
 
 	header := map[string]string{
@@ -28,8 +28,8 @@ func SendMessage[T IQwenContent](ctx context.Context, payload *Request[T], cli h
 		header["X-DashScope-OssResourceResolve"] = "enable"
 	}
 
-	if payload.Plugin != "" {
-		header["X-DashScope-Plugin"] = payload.Plugin
+	if len(payload.Plugin) != 0 {
+		header["X-DashScope-Plugin"] = payload.Plugin.toString()
 	}
 
 	headerOpt := httpclient.WithHeader(header)
@@ -45,7 +45,7 @@ func SendMessage[T IQwenContent](ctx context.Context, payload *Request[T], cli h
 }
 
 //nolint:lll
-func SendMessageStream[T IQwenContent](ctx context.Context, payload *Request[T], cli httpclient.IHttpClient, url, token string) (*OutputResponse[T], error) {
+func SendMessageStream[T IQwenContent, U IQwenContent](ctx context.Context, payload *Request[T], cli httpclient.IHttpClient, url, token string) (*OutputResponse[U], error) {
 	if payload.Model == "" {
 		return nil, ErrModelNotSet
 	}
@@ -59,17 +59,19 @@ func SendMessageStream[T IQwenContent](ctx context.Context, payload *Request[T],
 		header["X-DashScope-OssResourceResolve"] = "enable"
 	}
 
-	if payload.Plugin != "" {
-		header["X-DashScope-Plugin"] = payload.Plugin
+	if len(payload.Plugin) != 0 {
+		header["X-DashScope-Plugin"] = payload.Plugin.toString()
 	}
 
-	responseChan := asyncChatStreaming(ctx, payload, header, cli, url, token)
+	fmt.Println("debug... header: ", header)
+
+	responseChan := asyncChatStreaming[T, U](ctx, payload, header, cli, url, token)
 
 	return iterateStreamChannel(ctx, responseChan, payload.StreamingFn)
 }
 
-func iterateStreamChannel[T IQwenContent](ctx context.Context, channel <-chan StreamOutput[T], fn StreamingFunc) (*OutputResponse[T], error) {
-	outputMessage := OutputResponse[T]{}
+func iterateStreamChannel[U IQwenContent](ctx context.Context, channel <-chan StreamOutput[U], fn StreamingFunc) (*OutputResponse[U], error) {
+	outputMessage := OutputResponse[U]{}
 	for rspData := range channel {
 		if rspData.Err != nil {
 			return nil, &httpclient.HTTPRequestError{Message: "SSE Error: ", Cause: rspData.Err}
@@ -106,15 +108,15 @@ func iterateStreamChannel[T IQwenContent](ctx context.Context, channel <-chan St
 }
 
 //nolint:lll
-func asyncChatStreaming[T IQwenContent](
+func asyncChatStreaming[T IQwenContent, U IQwenContent](
 	ctx context.Context,
 	payload *Request[T],
 	header map[string]string,
 	cli httpclient.IHttpClient,
 	url, token string,
-) <-chan StreamOutput[T] {
+) <-chan StreamOutput[U] {
 	chanBuffer := 1000
-	_respChunkChannel := make(chan StreamOutput[T], chanBuffer)
+	_respChunkChannel := make(chan StreamOutput[U], chanBuffer)
 
 	go func() {
 		_combineStreamingChunk(ctx, payload, header, _respChunkChannel, cli, url, token)
@@ -128,11 +130,11 @@ func asyncChatStreaming[T IQwenContent](
  * event: xxxxx
  * ......
  */
-func _combineStreamingChunk[T IQwenContent](
+func _combineStreamingChunk[T IQwenContent, U IQwenContent](
 	ctx context.Context,
 	payload *Request[T],
 	header map[string]string,
-	_respChunkChannel chan StreamOutput[T],
+	_respChunkChannel chan StreamOutput[U],
 	cli httpclient.IHttpClient,
 	url string,
 	token string,
@@ -147,17 +149,17 @@ func _combineStreamingChunk[T IQwenContent](
 	_rawStreamOutChannel, err = cli.PostSSE(ctx, url, payload, headerOpt, tokenOpt)
 
 	if err != nil {
-		_respChunkChannel <- StreamOutput[T]{Err: err}
+		_respChunkChannel <- StreamOutput[U]{Err: err}
 		return
 	}
 
-	rsp := StreamOutput[T]{}
+	rsp := StreamOutput[U]{}
 
 	for v := range _rawStreamOutChannel {
 		if strings.TrimSpace(v) == "" {
 			// streaming out combined response
 			_respChunkChannel <- rsp
-			rsp = StreamOutput[T]{}
+			rsp = StreamOutput[U]{}
 			continue
 		}
 

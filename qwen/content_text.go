@@ -6,8 +6,7 @@ import (
 
 // TextConent is used for text-generation only.
 type TextContent struct {
-	Text  string
-	IsRaw bool // 临时，如果是raw数据，直接返回Text
+	Text string
 }
 
 var _ IQwenContentMethods = &TextContent{}
@@ -55,10 +54,6 @@ func (t *TextContent) SetBlob(_ string) {
 
 // redifine MarshalJSON and UnmarshalJSON.
 func (t TextContent) MarshalJSON() ([]byte, error) {
-	if t.IsRaw {
-		return []byte(t.Text), nil
-	}
-
 	return json.Marshal(t.Text)
 }
 
