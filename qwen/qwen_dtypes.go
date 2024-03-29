@@ -2,6 +2,7 @@ package qwen
 
 import (
 	"context"
+	"encoding/json"
 )
 
 type Parameters struct {
@@ -96,6 +97,16 @@ type Input[T IQwenContent] struct {
 
 type StreamingFunc func(ctx context.Context, chunk []byte) error
 
+type Plugins map[string]map[string]any
+
+func (p Plugins) toString() string {
+	b, err := json.Marshal(p)
+	if err != nil {
+		return err.Error()
+	}
+	return string(b)
+}
+
 type Request[T IQwenContent] struct {
 	Model      string      `json:"model"`
 	Input      Input[T]    `json:"input"`
@@ -104,6 +115,8 @@ type Request[T IQwenContent] struct {
 	StreamingFn StreamingFunc `json:"-"`
 	// qwen-vl model need to upload image to oss for recognition.
 	HasUploadOss bool `json:"-"`
+	// plugin
+	Plugin Plugins `json:"-"`
 }
 
 func (q *Request[T]) SetModel(value string) *Request[T] {

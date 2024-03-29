@@ -38,7 +38,7 @@ func newTongyiCLientWithHTTPCli(model string, token string, httpcli httpclient.I
 // nolint:lll
 func (q *TongyiClient) CreateCompletion(ctx context.Context, payload *qwen.Request[*qwen.TextContent]) (*TextQwenResponse, error) {
 	payload = paylosdPreCheck(q, payload)
-	return genericCompletion(ctx, payload, q.httpCli, qwen.URLQwen(), q.token)
+	return genericCompletion[*qwen.TextContent, *qwen.TextContent](ctx, payload, q.httpCli, qwen.URLQwen(), q.token)
 }
 
 //nolint:lll
@@ -47,7 +47,7 @@ func (q *TongyiClient) CreateVLCompletion(ctx context.Context, payload *qwen.Req
 
 	for _, vMsg := range payload.Input.Messages {
 		tmpImageContent, hasImg := vMsg.Content.PopImageContent()
-		if hasImg && vMsg.Role == "user" {
+		if hasImg && vMsg.Role == qwen.RoleUser {
 			filepath := tmpImageContent.Image
 
 			ossURL, hasUploadOss, err := checkIfNeedUploadFile(ctx, filepath, payload.Model, q.token)
@@ -61,7 +61,7 @@ func (q *TongyiClient) CreateVLCompletion(ctx context.Context, payload *qwen.Req
 		}
 	}
 
-	return genericCompletion(ctx, payload, q.httpCli, qwen.URLQwenVL(), q.token)
+	return genericCompletion[*qwen.VLContentList, *qwen.VLContentList](ctx, payload, q.httpCli, qwen.URLQwenVL(), q.token)
 }
 
 //nolint:lll
@@ -70,7 +70,7 @@ func (q *TongyiClient) CreateAudioCompletion(ctx context.Context, payload *qwen.
 	for _, acMsg := range payload.Input.Messages {
 		tmpAudioContent, hasAudio := acMsg.Content.PopAudioContent()
 
-		if hasAudio && acMsg.Role == "user" {
+		if hasAudio && acMsg.Role == qwen.RoleUser {
 			filepath := tmpAudioContent.Audio
 
 			ossURL, hasUploadOss, err := checkIfNeedUploadFile(ctx, filepath, payload.Model, q.token)
@@ -85,7 +85,32 @@ func (q *TongyiClient) CreateAudioCompletion(ctx context.Context, payload *qwen.
 		}
 	}
 
-	return genericCompletion(ctx, payload, q.httpCli, qwen.URLQwenVL(), q.token)
+	return genericCompletion[*qwen.AudioContentList, *qwen.AudioContentList](ctx, payload, q.httpCli, qwen.URLQwenVL(), q.token)
+}
+
+// used for pdf_extracter plugin.
+//
+//nolint:lll
+func (q *TongyiClient) CreateFileCompletion(ctx context.Context, payload *qwen.Request[*qwen.FileContentList]) (*FileQwenResponse, error) {
+	payload = paylosdPreCheck(q, payload)
+
+	for _, vMsg := range payload.Input.Messages {
+		tmpImageContent, hasImg := vMsg.Content.PopFileContent()
+		if hasImg && vMsg.Role == qwen.RoleUser {
+			filepath := tmpImageContent.File
+
+			ossURL, hasUploadOss, err := checkIfNeedUploadFile(ctx, filepath, payload.Model, q.token)
+			if err != nil {
+				return nil, err
+			}
+			if hasUploadOss {
+				payload.HasUploadOss = true
+			}
+			vMsg.Content.SetFile(ossURL)
+		}
+	}
+
+	return genericCompletion[*qwen.FileContentList, *qwen.TextContent](ctx, payload, q.httpCli, qwen.URLQwen(), q.token)
 }
 
 func checkIfNeedUploadFile(ctx context.Context, filepath string, model, token string) (string, bool, error) {
@@ -114,7 +139,7 @@ func checkIfNeedUploadFile(ctx context.Context, filepath string, model, token st
 }
 
 //nolint:lll
-func genericCompletion[T qwen.IQwenContent](ctx context.Context, payload *qwen.Request[T], httpcli httpclient.IHttpClient, url, token string) (*qwen.OutputResponse[T], error) {
+func genericCompletion[T qwen.IQwenContent, U qwen.IQwenContent](ctx context.Context, payload *qwen.Request[T], httpcli httpclient.IHttpClient, url, token string) (*qwen.OutputResponse[U], error) {
 	if payload.Model == "" {
 		return nil, ErrModelNotSet
 	}
@@ -122,10 +147,10 @@ func genericCompletion[T qwen.IQwenContent](ctx context.Context, payload *qwen.R
 	// use streaming if streaming func is set
 	if payload.StreamingFn != nil {
 		payload.Parameters.SetIncrementalOutput(true)
-		return qwen.SendMessageStream(ctx, payload, httpcli, url, token)
+		return qwen.SendMessageStream[T, U](ctx, payload, httpcli, url, token)
 	}
 
-	return qwen.SendMessage(ctx, payload, httpcli, url, token)
+	return qwen.SendMessage[T, U](ctx, payload, httpcli, url, token)
 }
 
 // TODO: intergrate wanx.Request into qwen.IQwenContent(or should rename to ITongyiContent)
