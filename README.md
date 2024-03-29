@@ -22,8 +22,12 @@ go get -u github.com/devinyf/dashscopego
 #### Paraformer(语音识别)
 - [x] [实时语音识别](./example/paraformer/speech2text.go)
 - [ ] 录音文件识别
-#### [模型插件调用]
+#### 模型插件调用
 - [x] [pdf解析](./example/qwen_plugins/pdf_extracter/main.go)
+- [ ] 计算器
+- [ ] 图片生成
+- [ ] Python代码解释器
+- [ ] 自定义plugin-example
 #### langchaingo-Agent 
 - TODO...
 
