@@ -196,7 +196,6 @@ func (c *HTTPCli) httpInner(ctx context.Context, method, url string, body interf
 
 	// fmt.Printf("debug... body: %+v\n", body)
 	bodyBuffer, err := c.EncodeJSONBody(body)
-	fmt.Printf("debug... body: %+v\n", string(bodyBuffer.Bytes()))
 	if err != nil {
 		return nil, err
 	}

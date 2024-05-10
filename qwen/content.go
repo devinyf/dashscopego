@@ -3,7 +3,7 @@ package qwen
 // qwen(text-generation) and qwen-vl(multi-modal) have different data format
 // so define generic interfaces for them.
 type IQwenContent interface {
-	*TextContent | *VLContentList | *AudioContentList
+	*TextContent | *VLContentList | *AudioContentList | *FileContentList
 	IQwenContentMethods
 }
 
@@ -13,6 +13,40 @@ type IQwenContentMethods interface {
 	ToString() string
 	SetText(text string)
 	AppendText(text string)
-	SetImage(url string)
-	SetAudio(url string)
+	SetBlob(url string)
+}
+
+// content with blob url: e.g. image, audio, file...
+type IBlobContent interface {
+	GetBlob() string
+}
+
+type IBlobListConvert interface {
+	ConvertToBlobList() []IBlobContent
+}
+
+func popBlobContent(rawList IBlobListConvert) (IBlobContent, bool) {
+	list := rawList.ConvertToBlobList()
+	return innerGetBlob(&list)
+}
+
+func innerGetBlob(list *[]IBlobContent) (IBlobContent, bool) {
+	hasBlob := false
+	for i, v := range *list {
+		if v.GetBlob() != "" {
+			hasBlob = true
+			preSlice := (*list)[:i]
+			if i == len(*list)-1 {
+				*list = preSlice
+			} else {
+				postSlice := (*list)[i+1:]
+				*list = append(*list, preSlice...)
+				*list = append(*list, postSlice...)
+			}
+
+			return v, hasBlob
+		}
+	}
+
+	return nil, hasBlob
 }

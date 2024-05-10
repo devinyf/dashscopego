@@ -38,8 +38,8 @@ func main() {
 
 	input := dashscopego.AudioInput{
 		Messages: []dashscopego.AudioMessage{
-			{Role: "system", Content: &sysContent},
-			{Role: "user", Content: &userContent},
+			{Role: qwen.RoleSystem, Content: &sysContent},
+			{Role: qwen.RoleUser, Content: &userContent},
 		},
 	}
 

@@ -8,7 +8,6 @@ import (
 
 	httpclient "github.com/devinyf/dashscopego/httpclient"
 	qwen "github.com/devinyf/dashscopego/qwen"
-	wanx "github.com/devinyf/dashscopego/wanx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
@@ -48,7 +47,7 @@ func TestBasic(t *testing.T) {
 	text := qwen.TextContent{Text: "Hello"}
 	input := TextInput{
 		Messages: []TextMessage{
-			{Role: "user", Content: &text},
+			{Role: qwen.RoleUser, Content: &text},
 		},
 	}
 
@@ -73,7 +72,7 @@ func TestStreamingChunk(t *testing.T) {
 
 	input := TextInput{
 		Messages: []TextMessage{
-			{Role: "user", Content: &content},
+			{Role: qwen.RoleUser, Content: &content},
 		},
 	}
 
@@ -117,8 +116,8 @@ func TestVLBasic(t *testing.T) {
 
 	input := VLInput{
 		Messages: []VLMessage{
-			{Role: "system", Content: &sysContent},
-			{Role: "user", Content: &userContent},
+			{Role: qwen.RoleSystem, Content: &sysContent},
+			{Role: qwen.RoleUser, Content: &userContent},
 		},
 	}
 
@@ -158,8 +157,8 @@ func TestVLStreamChund(t *testing.T) {
 
 	input := VLInput{
 		Messages: []VLMessage{
-			{Role: "system", Content: &sysContent},
-			{Role: "user", Content: &userContent},
+			{Role: qwen.RoleSystem, Content: &sysContent},
+			{Role: qwen.RoleUser, Content: &userContent},
 		},
 	}
 
@@ -182,6 +181,44 @@ func TestVLStreamChund(t *testing.T) {
 	assert.Regexp(t, "dog|person|individual|woman|girl", strings.ToLower(output))
 }
 
+func TestPdfExtracterPlugin(t *testing.T) {
+	t.Parallel()
+	ctx := context.TODO()
+
+	cli := newTongyiClient(t, "qwen-turbo")
+
+	content := qwen.FileContentList{
+		{
+			Text: "总结该文件信息",
+		},
+		{
+			File: "https://qianwen-res.oss-cn-beijing.aliyuncs.com/QWEN_TECHNICAL_REPORT.pdf",
+		},
+	}
+
+	input := FileInput{
+		Messages: []FileMessage{
+			{Role: qwen.RoleUser, Content: &content},
+		},
+	}
+
+	req := &FileRequest{
+		Model:   "qwen-turbo",
+		Input:   input,
+		Plugins: qwen.Plugins{"pdf_extracter": {}},
+	}
+
+	resp, err := cli.CreateFileCompletion(ctx, req)
+	require.NoError(t, err)
+
+	outputText := resp.Output.Choices[0].Message.Content.ToString()
+
+	assert.NotEmpty(t, outputText)
+	assert.Regexp(t, "Qwen|阿里巴巴|模型|人工智能", outputText)
+}
+
+//nolint:all
+/* TODO: this test case too slow.
 func TestImageGeneration(t *testing.T) {
 	t.Parallel()
 	ctx := context.TODO()
@@ -206,6 +243,7 @@ func TestImageGeneration(t *testing.T) {
 		assert.Equal(t, "image/png", blob.ImgType)
 	}
 }
+*/
 
 func TestMockStreamingChunk(t *testing.T) {
 	t.Parallel()
@@ -219,7 +257,7 @@ func TestMockStreamingChunk(t *testing.T) {
 	text := qwen.TextContent{Text: "Hello"}
 	input := TextInput{
 		Messages: []TextMessage{
-			{Role: "user", Content: &text},
+			{Role: qwen.RoleUser, Content: &text},
 		},
 	}
 
@@ -249,7 +287,7 @@ func TestMockBasic(t *testing.T) {
 	text := qwen.TextContent{Text: "Hello"}
 	input := TextInput{
 		Messages: []TextMessage{
-			{Role: "user", Content: &text},
+			{Role: qwen.RoleUser, Content: &text},
 		},
 	}
 

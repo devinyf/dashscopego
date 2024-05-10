@@ -2,6 +2,7 @@ package qwen
 
 import (
 	"context"
+	"encoding/json"
 )
 
 type Parameters struct {
@@ -85,9 +86,25 @@ func (p *Parameters) tryInit() *Parameters {
 	return p
 }
 
+type PluginCall struct {
+	Name      string `json:"name"`
+	Arguments string `json:"arguments"` // TODO: 临时使用string...后续设计通用 interface 方便自定义扩展.
+}
+
+func (p *PluginCall) ToString() string {
+	b, err := json.Marshal(p)
+	if err != nil {
+		return err.Error()
+	}
+	return string(b)
+}
+
 type Message[T IQwenContent] struct {
 	Role    string `json:"role"`
 	Content T      `json:"content"`
+	// plugin parameters
+	Name       *string     `json:"name,omitempty"`
+	PluginCall *PluginCall `json:"plugin_call,omitempty"`
 }
 
 type Input[T IQwenContent] struct {
@@ -95,6 +112,21 @@ type Input[T IQwenContent] struct {
 }
 
 type StreamingFunc func(ctx context.Context, chunk []byte) error
+
+type Plugins map[string]map[string]any
+
+func (p Plugins) toString() string {
+	b, err := json.Marshal(p)
+	if err != nil {
+		return err.Error()
+	}
+	return string(b)
+}
+
+const (
+	PluginCodeInterpreter = "code_interpreter"
+	PluginPDFExtracter    = "pdf_extracter"
+)
 
 type Request[T IQwenContent] struct {
 	Model      string      `json:"model"`
@@ -105,7 +137,7 @@ type Request[T IQwenContent] struct {
 	// qwen-vl model need to upload image to oss for recognition.
 	HasUploadOss bool `json:"-"`
 	// plugin
-	Plugin string `json:"-"`
+	Plugins Plugins `json:"-"`
 }
 
 func (q *Request[T]) SetModel(value string) *Request[T] {
@@ -137,8 +169,9 @@ type StreamOutput[T IQwenContent] struct {
 }
 
 type Choice[T IQwenContent] struct {
-	Message      Message[T] `json:"message"`
-	FinishReason string     `json:"finish_reason"`
+	Message      Message[T]   `json:"message,omitempty"`
+	Messages     []Message[T] `json:"messages,omitempty"` // TODO: 部分 plugin 会返回message列表.
+	FinishReason string       `json:"finish_reason"`
 }
 
 // new version response format.
@@ -169,4 +202,12 @@ func (t *OutputResponse[T]) GetUsage() Usage {
 
 func (t *OutputResponse[T]) GetRequestID() string {
 	return t.RequestID
+}
+
+func (t *OutputResponse[T]) ToJSONStr() string {
+	b, err := json.Marshal(t)
+	if err != nil {
+		return err.Error()
+	}
+	return string(b)
 }
