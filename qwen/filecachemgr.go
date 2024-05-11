@@ -66,7 +66,11 @@ func (mgr *FileCacheMgr) Save(fn string) error {
 func LoadFileCacheMgr(fn string) error {
 	buf, err := os.ReadFile(fn)
 	if err != nil {
-		return err
+		gFileCacheMgr = &FileCacheMgr{
+			MapFiles: make(map[string]*FileCache),
+		}
+
+		return nil
 	}
 
 	gFileCacheMgr = &FileCacheMgr{}
