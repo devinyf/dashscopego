@@ -115,6 +115,13 @@ func UploadFileFromURL(ctx context.Context, fileURL, model, apiKey string) (stri
 }
 
 func uploadFIle(ctx context.Context, fileBytes []byte, fileName, mimeType, model, apiKey string) (string, error) {
+	if gFileCacheMgr != nil {
+		url := gFileCacheMgr.Get(fileBytes)
+		if url != "" {
+			return url, nil
+		}
+	}
+
 	certInfo, err := getUploadCertificate(ctx, model, apiKey)
 	if err != nil {
 		return "", &WrapMessageError{Message: "upload Cert Error", Cause: err}
@@ -142,6 +149,11 @@ func uploadFIle(ctx context.Context, fileBytes []byte, fileName, mimeType, model
 	}
 
 	ossURL := "oss://" + ossKey
+
+	if gFileCacheMgr != nil {
+		gFileCacheMgr.Cache(fileBytes, ossURL)
+	}
+
 	return ossURL, nil
 }
 
