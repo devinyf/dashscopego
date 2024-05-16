@@ -80,3 +80,16 @@ func (vlist *VLContentList) ConvertToBlobList() []IBlobContent {
 	}
 	return list
 }
+
+func (vlist *VLContentList) ConvertBackFromBlobList(list []IBlobContent) {
+	if vlist == nil {
+		panic("VLContentList is nil or empty")
+	}
+
+	*vlist = make([]VLContent, len(list))
+	for i, v := range list {
+		if content, ok := v.(VLContent); ok {
+			(*vlist)[i] = content
+		}
+	}
+}

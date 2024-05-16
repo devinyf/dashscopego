@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -92,7 +93,7 @@ type UploadRequest struct {
 */
 
 // uploading local image to aliyun oss, a oss url will be returned.
-func UploadLocalFile(ctx context.Context, filePath, model, apiKey string) (string, error) {
+func UploadLocalFile(ctx context.Context, filePath, model, apiKey string, uploadCacher UploadCacher) (string, error) {
 	fileBytes, mimeType, err := loadLocalFileWithMimeType(filePath)
 	if err != nil {
 		return "", err
@@ -100,27 +101,51 @@ func UploadLocalFile(ctx context.Context, filePath, model, apiKey string) (strin
 
 	fileName := filepath.Base(filePath)
 
-	return uploadFIle(ctx, fileBytes, fileName, mimeType, model, apiKey)
+	if uploadCacher != nil {
+		return uploadFileWithCache(ctx, fileBytes, fileName, mimeType, model, apiKey, uploadCacher)
+	} else {
+		return uploadFile(ctx, fileBytes, fileName, mimeType, model, apiKey)
+	}
 }
 
 // download and uploading a online image to aliyun oss, a oss url will be returned.
-func UploadFileFromURL(ctx context.Context, fileURL, model, apiKey string) (string, error) {
+func UploadFileFromURL(ctx context.Context, fileURL, model, apiKey string, uploadCacher UploadCacher) (string, error) {
 	fileBytes, mimeType, err := downloadFileWithMimeType(fileURL)
 	if err != nil {
 		return "", err
 	}
 	fileName := filepath.Base(fileURL)
 
-	return uploadFIle(ctx, fileBytes, fileName, mimeType, model, apiKey)
+	if uploadCacher != nil {
+		return uploadFileWithCache(ctx, fileBytes, fileName, mimeType, model, apiKey, uploadCacher)
+	} else {
+		return uploadFile(ctx, fileBytes, fileName, mimeType, model, apiKey)
+	}
 }
 
-func uploadFIle(ctx context.Context, fileBytes []byte, fileName, mimeType, model, apiKey string) (string, error) {
-	if gFileCacheMgr != nil {
-		url := gFileCacheMgr.Get(fileBytes)
-		if url != "" {
-			return url, nil
-		}
+func uploadFileWithCache(ctx context.Context, fileBytes []byte, fileName, mimeType, model, apiKey string, uploadCacher UploadCacher) (string, error) {
+	var ossUrl string
+	var err error
+
+	ossUrl = uploadCacher.GetCache(fileBytes)
+	if ossUrl != "" {
+		return ossUrl, nil
 	}
+
+	ossUrl, err = uploadFile(ctx, fileBytes, fileName, mimeType, model, apiKey)
+	if err != nil {
+		return "", err
+	}
+
+	err = uploadCacher.SaveCache(fileBytes, ossUrl)
+	if err != nil {
+		log.Printf("save upload cache error: %v\n", err)
+	}
+
+	return ossUrl, nil
+}
+
+func uploadFile(ctx context.Context, fileBytes []byte, fileName, mimeType, model, apiKey string) (string, error) {
 
 	certInfo, err := getUploadCertificate(ctx, model, apiKey)
 	if err != nil {
@@ -149,10 +174,6 @@ func uploadFIle(ctx context.Context, fileBytes []byte, fileName, mimeType, model
 	}
 
 	ossURL := "oss://" + ossKey
-
-	if gFileCacheMgr != nil {
-		gFileCacheMgr.Cache(fileBytes, ossURL)
-	}
 
 	return ossURL, nil
 }

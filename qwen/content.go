@@ -23,11 +23,17 @@ type IBlobContent interface {
 
 type IBlobListConvert interface {
 	ConvertToBlobList() []IBlobContent
+	ConvertBackFromBlobList(list []IBlobContent)
 }
 
 func popBlobContent(rawList IBlobListConvert) (IBlobContent, bool) {
+	// TODO: rawList must be a pointer, otherwise it will panic.
 	list := rawList.ConvertToBlobList()
-	return innerGetBlob(&list)
+	content, hasBlob := innerGetBlob(&list)
+
+	rawList.ConvertBackFromBlobList(list)
+
+	return content, hasBlob
 }
 
 func innerGetBlob(list *[]IBlobContent) (IBlobContent, bool) {
@@ -36,6 +42,7 @@ func innerGetBlob(list *[]IBlobContent) (IBlobContent, bool) {
 		if v.GetBlob() != "" {
 			hasBlob = true
 			preSlice := (*list)[:i]
+
 			if i == len(*list)-1 {
 				*list = preSlice
 			} else {

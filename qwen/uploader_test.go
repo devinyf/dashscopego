@@ -60,9 +60,34 @@ func TestUploadingImageFromURL(t *testing.T) {
 	testImgURL := "https://pic.ntimg.cn/20140113/8800276_184351657000_2.jpg"
 
 	ctx := context.TODO()
+	var uploadCacher UploadCacher = nil
 
-	ossFilePath, err := UploadFileFromURL(ctx, testImgURL, "qwen-vl-plus", apiKey)
+	ossFilePath, err := UploadFileFromURL(ctx, testImgURL, "qwen-vl-plus", apiKey, uploadCacher)
 
 	require.NoError(t, err)
 	require.NotEmpty(t, ossFilePath)
 }
+
+/*
+func TestUploadingImageFromURLWithCache(t *testing.T) {
+	t.Parallel()
+	apiKey := getAPIKey(t)
+
+	var uploadCacher UploadCacher = NewMemoryFileCache()
+	ctx := context.TODO()
+
+	homePath, _ := os.UserHomeDir()
+	localFIlePath := homePath + "/Downloads/pandas_img.jpg"
+
+	ossFilePath, err := UploadLocalFile(ctx, localFIlePath, "qwen-vl-plus", apiKey, uploadCacher)
+
+	require.NoError(t, err)
+	require.NotEmpty(t, ossFilePath)
+
+	ossFilePath2, err := UploadLocalFile(ctx, localFIlePath, "qwen-vl-plus", apiKey, uploadCacher)
+
+	require.NoError(t, err)
+	require.Equal(t, ossFilePath, ossFilePath2)
+}
+
+*/

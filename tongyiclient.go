@@ -14,9 +14,10 @@ import (
 )
 
 type TongyiClient struct {
-	Model   string
-	token   string
-	httpCli httpclient.IHttpClient
+	Model       string
+	token       string
+	httpCli     httpclient.IHttpClient
+	uploadCache qwen.UploadCacher
 }
 
 func NewTongyiClient(model string, token string) *TongyiClient {
@@ -26,10 +27,17 @@ func NewTongyiClient(model string, token string) *TongyiClient {
 
 func newTongyiCLientWithHTTPCli(model string, token string, httpcli httpclient.IHttpClient) *TongyiClient {
 	return &TongyiClient{
-		Model:   model,
-		httpCli: httpcli,
-		token:   token,
+		Model:       model,
+		httpCli:     httpcli,
+		token:       token,
+		uploadCache: qwen.NewMemoryFileCache(),
 	}
+}
+
+// setup upload cache for uploading files to prevent duplicate upload.
+func (q *TongyiClient) SetUploadCache(uploadCache qwen.UploadCacher) *TongyiClient {
+	q.uploadCache = uploadCache
+	return q
 }
 
 // duplicate: CreateCompletion and CreateVLCompletion are the same but with different payload types.
@@ -50,7 +58,7 @@ func (q *TongyiClient) CreateVLCompletion(ctx context.Context, payload *qwen.Req
 		if hasImg && vMsg.Role == qwen.RoleUser {
 			filepath := tmpImageContent.Image
 
-			ossURL, hasUploadOss, err := checkIfNeedUploadFile(ctx, filepath, payload.Model, q.token)
+			ossURL, hasUploadOss, err := checkIfNeedUploadFile(ctx, filepath, payload.Model, q.token, q.uploadCache)
 			if err != nil {
 				return nil, err
 			}
@@ -73,7 +81,7 @@ func (q *TongyiClient) CreateAudioCompletion(ctx context.Context, payload *qwen.
 		if hasAudio && acMsg.Role == qwen.RoleUser {
 			filepath := tmpAudioContent.Audio
 
-			ossURL, hasUploadOss, err := checkIfNeedUploadFile(ctx, filepath, payload.Model, q.token)
+			ossURL, hasUploadOss, err := checkIfNeedUploadFile(ctx, filepath, payload.Model, q.token, q.uploadCache)
 			if err != nil {
 				return nil, err
 			}
@@ -99,7 +107,7 @@ func (q *TongyiClient) CreateFileCompletion(ctx context.Context, payload *qwen.R
 		if hasImg && vMsg.Role == qwen.RoleUser {
 			filepath := tmpImageContent.File
 
-			ossURL, hasUploadOss, err := checkIfNeedUploadFile(ctx, filepath, payload.Model, q.token)
+			ossURL, hasUploadOss, err := checkIfNeedUploadFile(ctx, filepath, payload.Model, q.token, q.uploadCache)
 			if err != nil {
 				return nil, err
 			}
@@ -113,7 +121,7 @@ func (q *TongyiClient) CreateFileCompletion(ctx context.Context, payload *qwen.R
 	return genericCompletion[*qwen.FileContentList, *qwen.TextContent](ctx, payload, q.httpCli, qwen.URLQwen(), q.token)
 }
 
-func checkIfNeedUploadFile(ctx context.Context, filepath string, model, token string) (string, bool, error) {
+func checkIfNeedUploadFile(ctx context.Context, filepath string, model, token string, uploadCacher qwen.UploadCacher) (string, bool, error) {
 	var err error
 	var ossURL string
 	var hasUploadOss bool
@@ -127,11 +135,11 @@ func checkIfNeedUploadFile(ctx context.Context, filepath string, model, token st
 	case strings.HasPrefix(filepath, "file://"):
 		// 本地文件.
 		filepath = strings.TrimPrefix(filepath, "file://")
-		ossURL, err = qwen.UploadLocalFile(ctx, filepath, model, token)
+		ossURL, err = qwen.UploadLocalFile(ctx, filepath, model, token, uploadCacher)
 		hasUploadOss = true
 	case strings.HasPrefix(filepath, "https://") || strings.HasPrefix(filepath, "http://"):
 		// 文件的 URL 链接.
-		ossURL, err = qwen.UploadFileFromURL(ctx, filepath, model, token)
+		ossURL, err = qwen.UploadFileFromURL(ctx, filepath, model, token, uploadCacher)
 		hasUploadOss = true
 	}
 

@@ -17,7 +17,9 @@ func newTongyiClient(t *testing.T, model string) *TongyiClient {
 	t.Helper()
 	token := os.Getenv("DASHSCOPE_API_KEY")
 
-	cli := NewTongyiClient(model, token)
+	cli := NewTongyiClient(model, token).
+		SetUploadCache(qwen.NewMemoryFileCache())
+
 	if cli.token == "" {
 		t.Skip("token is empty")
 	}

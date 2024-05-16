@@ -78,3 +78,16 @@ func (fclist *FileContentList) ConvertToBlobList() []IBlobContent {
 	}
 	return list
 }
+
+func (fclist *FileContentList) ConvertBackFromBlobList(list []IBlobContent) {
+	if fclist == nil {
+		panic("VLContentList is nil or empty")
+	}
+
+	*fclist = make([]FileContent, len(list))
+	for i, v := range list {
+		if content, ok := v.(FileContent); ok {
+			(*fclist)[i] = content
+		}
+	}
+}

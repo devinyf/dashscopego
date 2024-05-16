@@ -17,22 +17,24 @@ func main() {
 		panic("token is empty")
 	}
 
-	cli := dashscopego.NewTongyiClient(model, token)
+	cli := dashscopego.NewTongyiClient(model, token).
+		SetUploadCache(qwen.NewMemoryFileCache()) // 可以通过 UploadCacher 接口 自定义缓存实现 避免重复上传, 默认使用内存缓存
+
+	homedir, _ := os.UserHomeDir()
 
 	sysContent := qwen.VLContentList{
 		{
 			Text: "You are a helpful assistant.",
 		},
 	}
+
 	userContent := qwen.VLContentList{
 		{
-			// Text: "describe the image",
 			Text: "用唐诗体说明一下这张图片中的内容", //nolint:gosmopolitan
 		},
 		{
-			// Image: "https://pic.ntimg.cn/20140113/8800276_184351657000_2.jpg",
-			// Image: "file:///Users/xxxx/xxxx.png",
-			Image: "https://dashscope.oss-cn-beijing.aliyuncs.com/images/dog_and_girl.jpeg",
+			Image: "file://" + homedir + "/Downloads/pandas_img.jpg",
+			// Image: "https://dashscope.oss-cn-beijing.aliyuncs.com/images/dog_and_girl.jpeg",
 		},
 	}
 
@@ -42,12 +44,12 @@ func main() {
 			{Role: qwen.RoleUser, Content: &userContent},
 		},
 	}
-
 	// callback function:  print stream result
 	streamCallbackFn := func(ctx context.Context, chunk []byte) error {
 		log.Print(string(chunk))
 		return nil
 	}
+
 	req := &dashscopego.VLRequest{
 		Input:       input,
 		StreamingFn: streamCallbackFn,

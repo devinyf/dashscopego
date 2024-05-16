@@ -81,3 +81,16 @@ func (acList *AudioContentList) ConvertToBlobList() []IBlobContent {
 	}
 	return list
 }
+
+func (acList *AudioContentList) ConvertBackFromBlobList(list []IBlobContent) {
+	if acList == nil {
+		panic("VLContentList is nil or empty")
+	}
+
+	*acList = make([]AudioContent, len(list))
+	for i, v := range list {
+		if content, ok := v.(AudioContent); ok {
+			(*acList)[i] = content
+		}
+	}
+}
