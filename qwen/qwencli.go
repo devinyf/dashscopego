@@ -145,7 +145,6 @@ func _combineStreamingChunk[T IQwenContent, U IQwenContent](
 	tokenOpt := httpclient.WithTokenHeaderOption(token)
 
 	_rawStreamOutChannel, err = cli.PostSSE(ctx, url, payload, headerOpt, tokenOpt)
-
 	if err != nil {
 		_respChunkChannel <- StreamOutput[U]{Err: err}
 		return

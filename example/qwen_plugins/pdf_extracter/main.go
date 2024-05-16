@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 	"os/user"
@@ -29,7 +28,7 @@ func main() {
 
 	// 比亚迪财报
 	pdfFile := filepath.Join(usr.HomeDir, "Downloads", "financial_results_byd.pdf")
-	filePath := fmt.Sprintf("file://%s", pdfFile)
+	filePath := "file://" + pdfFile
 
 	content := qwen.FileContentList{
 		{

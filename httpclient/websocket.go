@@ -2,7 +2,7 @@ package httpclient
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 	"log"
 	"net/http"
 	"time"
@@ -149,7 +149,7 @@ func (c *WsClient) writePump() {
 		case message, ok := <-c.inputChan:
 			if !ok {
 				// The write channel is closed.
-				c.errChan <- fmt.Errorf("write channel is closed")
+				c.errChan <- errors.New("write channel is closed")
 				err := c.Conn.WriteMessage(websocket.CloseMessage, []byte{})
 				if err != nil {
 					log.Printf("error: %v", err)

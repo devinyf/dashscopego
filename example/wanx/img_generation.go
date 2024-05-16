@@ -32,6 +32,8 @@ func main() {
 		Params: wanx.ImageSynthesisParams{
 			N: 1,
 		},
+		// 是否下载图片, 默认不下载，仅获取url
+		Download: true,
 	}
 	ctx := context.TODO()
 
@@ -41,7 +43,12 @@ func main() {
 	}
 
 	for _, blob := range imgBlobs {
-		saveImg2Desktop(blob.ImgType, blob.Data)
+		// 查看生成的图片url
+		print(blob.ImgURL)
+		// 下载图片到桌面
+		if req.Download {
+			saveImg2Desktop(blob.ImgType, blob.Data)
+		}
 	}
 }
 
