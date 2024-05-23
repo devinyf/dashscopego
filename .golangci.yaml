@@ -29,6 +29,7 @@ linters:
     - nolintlint # see https://github.com/golangci/golangci-lint/issues/3228.
     - depguard # disabling temporarily
     - ireturn # disabling temporarily
+    - copyloopvar
 
 linters-settings:
   funlen:
@@ -46,6 +47,10 @@ linters-settings:
         ignore-file-rules:
           - "**/*_test.go"
           - "**/mock/**/*.go"
-run:
-  skip-dirs:
-    - 'exp'
+# run:
+#   skip-dirs:
+#     - 'exp'
+
+issues:
+  exclude-dirs:
+    - exp

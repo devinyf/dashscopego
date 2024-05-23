@@ -60,6 +60,7 @@ func TestUploadingImageFromURL(t *testing.T) {
 	testImgURL := "https://pic.ntimg.cn/20140113/8800276_184351657000_2.jpg"
 
 	ctx := context.TODO()
+	// nolint:all
 	var uploadCacher UploadCacher = nil
 
 	ossFilePath, err := UploadFileFromURL(ctx, testImgURL, "qwen-vl-plus", apiKey, uploadCacher)

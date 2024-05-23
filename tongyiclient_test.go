@@ -79,7 +79,7 @@ func TestStreamingChunk(t *testing.T) {
 	}
 
 	output := ""
-	streamCallbackFn := func(ctx context.Context, chunk []byte) error {
+	streamCallbackFn := func(_ context.Context, chunk []byte) error {
 		output += string(chunk)
 		return nil
 	}
@@ -165,7 +165,7 @@ func TestVLStreamChund(t *testing.T) {
 	}
 
 	output := ""
-	streamCallbackFn := func(ctx context.Context, chunk []byte) error {
+	streamCallbackFn := func(_ context.Context, chunk []byte) error {
 		output += string(chunk)
 		return nil
 	}
@@ -265,7 +265,7 @@ func TestMockStreamingChunk(t *testing.T) {
 
 	req := &TextRequest{
 		Input: input,
-		StreamingFn: func(ctx context.Context, chunk []byte) error {
+		StreamingFn: func(_ context.Context, chunk []byte) error {
 			output += string(chunk)
 			return nil
 		},

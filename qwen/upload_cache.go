@@ -1,6 +1,7 @@
 package qwen
 
 import (
+	// #nosec G505
 	"crypto/sha1"
 	"encoding/hex"
 	"time"
@@ -14,7 +15,7 @@ type UploadCacher interface {
 	GetCache(buf []byte) string
 }
 
-// ==================== Sample MemoryFileCache ====================
+// ==================== Sample MemoryFileCache ====================.
 type FileCacheInfo struct {
 	URL        string
 	UploadTime int64
@@ -27,7 +28,6 @@ type MemoryFileCache struct {
 }
 
 func NewMemoryFileCache() *MemoryFileCache {
-
 	mgr := &MemoryFileCache{
 		MapFiles:             make(map[string]*FileCacheInfo),
 		MaxFileCacheLifeTime: time.Hour*2 - time.Minute*5,
@@ -76,6 +76,7 @@ func (mgr *MemoryFileCache) cronMemoryCleaner() {
 }
 
 func (mgr *MemoryFileCache) hash(buf []byte) string {
+	// #nosec G401
 	h := sha1.New()
 	h.Write(buf)
 	return hex.EncodeToString(h.Sum(nil))

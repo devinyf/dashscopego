@@ -47,7 +47,7 @@ func main() {
 	}
 
 	// callback function:  print stream result
-	streamCallbackFn := func(ctx context.Context, chunk []byte) error {
+	streamCallbackFn := func(_ context.Context, chunk []byte) error {
 		log.Print(string(chunk))
 		return nil
 	}

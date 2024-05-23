@@ -103,9 +103,9 @@ func UploadLocalFile(ctx context.Context, filePath, model, apiKey string, upload
 
 	if uploadCacher != nil {
 		return uploadFileWithCache(ctx, fileBytes, fileName, mimeType, model, apiKey, uploadCacher)
-	} else {
-		return uploadFile(ctx, fileBytes, fileName, mimeType, model, apiKey)
 	}
+
+	return uploadFile(ctx, fileBytes, fileName, mimeType, model, apiKey)
 }
 
 // download and uploading a online image to aliyun oss, a oss url will be returned.
@@ -118,35 +118,34 @@ func UploadFileFromURL(ctx context.Context, fileURL, model, apiKey string, uploa
 
 	if uploadCacher != nil {
 		return uploadFileWithCache(ctx, fileBytes, fileName, mimeType, model, apiKey, uploadCacher)
-	} else {
-		return uploadFile(ctx, fileBytes, fileName, mimeType, model, apiKey)
 	}
+
+	return uploadFile(ctx, fileBytes, fileName, mimeType, model, apiKey)
 }
 
 func uploadFileWithCache(ctx context.Context, fileBytes []byte, fileName, mimeType, model, apiKey string, uploadCacher UploadCacher) (string, error) {
-	var ossUrl string
+	var ossURL string
 	var err error
 
-	ossUrl = uploadCacher.GetCache(fileBytes)
-	if ossUrl != "" {
-		return ossUrl, nil
+	ossURL = uploadCacher.GetCache(fileBytes)
+	if ossURL != "" {
+		return ossURL, nil
 	}
 
-	ossUrl, err = uploadFile(ctx, fileBytes, fileName, mimeType, model, apiKey)
+	ossURL, err = uploadFile(ctx, fileBytes, fileName, mimeType, model, apiKey)
 	if err != nil {
 		return "", err
 	}
 
-	err = uploadCacher.SaveCache(fileBytes, ossUrl)
+	err = uploadCacher.SaveCache(fileBytes, ossURL)
 	if err != nil {
 		log.Printf("save upload cache error: %v\n", err)
 	}
 
-	return ossUrl, nil
+	return ossURL, nil
 }
 
 func uploadFile(ctx context.Context, fileBytes []byte, fileName, mimeType, model, apiKey string) (string, error) {
-
 	certInfo, err := getUploadCertificate(ctx, model, apiKey)
 	if err != nil {
 		return "", &WrapMessageError{Message: "upload Cert Error", Cause: err}

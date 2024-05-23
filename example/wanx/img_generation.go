@@ -44,6 +44,7 @@ func main() {
 
 	for _, blob := range imgBlobs {
 		// 查看生成的图片url
+		//nolint:forbidigo
 		print(blob.ImgURL)
 		// 下载图片到桌面
 		if req.Download {
