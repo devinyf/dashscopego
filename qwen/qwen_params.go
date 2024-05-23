@@ -11,6 +11,7 @@ type ModelQwen = string
 
 const (
 	// text-generation model.
+	QwenLong           ModelQwen = "qwen-long"
 	QwenTurbo          ModelQwen = "qwen-turbo"
 	QwenPlus           ModelQwen = "qwen-plus"
 	QwenMax            ModelQwen = "qwen-max"
@@ -19,6 +20,7 @@ const (
 
 	// multi-modal model.
 	QwenVLPlus     ModelQwen = "qwen-vl-plus"
+	QwenVLMax      ModelQwen = "qwen-vl-max"
 	QwenAudioTurbo ModelQwen = "qwen-audio-turbo"
 )
 
