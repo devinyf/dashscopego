@@ -29,7 +29,6 @@ linters:
     - nolintlint # see https://github.com/golangci/golangci-lint/issues/3228.
     - depguard # disabling temporarily
     - ireturn # disabling temporarily
-    - copyloopvar
 
 linters-settings:
   funlen:
