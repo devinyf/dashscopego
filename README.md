@@ -24,11 +24,18 @@ go get -u github.com/devinyf/dashscopego
 	- [x] [自定义工具调用](./example/function_call/main.go)
 #### 通义万相
 - [x] [文本生成图像](./example/wanx/img_generation.go)
+- [ ] 涂鸦作画
+- [ ] AnyText图文融合
 - [ ] 人像风格重绘
 - [ ] 图像背景生成
-#### Paraformer(语音识别)
+#### Paraformer(语音识别文字)
 - [x] [实时语音识别](./example/paraformer/speech2text.go)
 - [ ] 录音文件识别
+#### 语音合成
+- [ ] 文本至语音的实时流式合成
+#### 通用文本向量 Embedding
+- [x] [同步接口](./example/embedding/main.go)
+- [ ] 批处理接口
 
 #### langchaingo-Agent 
 - TODO...

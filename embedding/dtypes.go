@@ -1,17 +1,25 @@
 package embedding
 
 type Request struct {
-	Model string `json:"model"`
-	Input struct {
-		Texts []string `json:"texts"`
-	} `json:"input"`
-	Params struct {
-		TextType string `json:"text_type"` // query or document
-	} `json:"parameters"`
+	Model  string `json:"model"`
+	Input  Input  `json:"input"`
+	Params Params `json:"parameters"`
+}
+
+type Input struct {
+	Texts []string `json:"texts"`
+}
+
+type Params struct {
+	TextType string `json:"text_type"` // query or document
 }
 
 type Response struct {
 	Output Output `json:"output"`
+	Usgae  struct {
+		TotalTokens int `json:"total_tokens"`
+	} `json:"usage"`
+	RequestID string `json:"request_id"`
 }
 
 type Embedding struct {
@@ -21,8 +29,4 @@ type Embedding struct {
 
 type Output struct {
 	Embeddings []Embedding `json:"embeddings"`
-	Usgae      struct {
-		TotalTokens int `json:"total_tokens"`
-	} `json:"usage"`
-	RequestID string `json:"request_id"`
 }

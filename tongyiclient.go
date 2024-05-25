@@ -224,20 +224,22 @@ func (q *TongyiClient) CreateSpeechToTextGeneration(ctx context.Context, request
 	return nil
 }
 
-func (q *TongyiClient) CreateEmbedding(ctx context.Context, r *embedding.Request) ([][]float32, error) {
+func (q *TongyiClient) CreateEmbedding(ctx context.Context, r *embedding.Request) ([][]float32, int, error) {
 	resp, err := embedding.CreateEmbedding(ctx, r, q.httpCli, q.token)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
+
+	totslTokens := resp.Usgae.TotalTokens
 	if len(resp.Output.Embeddings) == 0 {
-		return nil, ErrEmptyResponse
+		return nil, 0, ErrEmptyResponse
 	}
 
 	embeddings := make([][]float32, 0)
 	for i := 0; i < len(resp.Output.Embeddings); i++ {
 		embeddings = append(embeddings, resp.Output.Embeddings[i].Embedding)
 	}
-	return embeddings, nil
+	return embeddings, totslTokens, nil
 }
 
 func paylosdPreCheck[T qwen.IQwenContent](q *TongyiClient, payload *qwen.Request[T]) *qwen.Request[T] {
