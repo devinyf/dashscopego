@@ -60,7 +60,7 @@ func main() {
 	 * 流式输出结果的 request_id/finish_reason/token_usage 等信息在调用完成后返回的 resp 结果中统一获取
 	 */
 	streamCallbackFn := func(ctx context.Context, chunk []byte) error {
-		// 也可以通过闭包的形式 使用外部定义的 channel 讲结果传递出去
+		// 也可以通过闭包的形式 使用外部定义的 channel 将结果传递出去
 		fmt.Print(string(chunk))
 		return nil
 	}
