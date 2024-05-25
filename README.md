@@ -32,8 +32,6 @@ go get -u github.com/devinyf/dashscopego
 #### langchaingo-Agent 
 - TODO...
 
-开发中...
-
 
 ```go
 import (

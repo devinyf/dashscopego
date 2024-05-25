@@ -103,8 +103,9 @@ func (p *PluginCall) ToString() string {
 type Message[T IQwenContent] struct {
 	Role    string `json:"role"`
 	Content T      `json:"content"`
+
+	Name *string `json:"name,omitempty"` // plugin 和 function_call 中使用.
 	// plugin parameters
-	Name       *string     `json:"name,omitempty"`
 	PluginCall *PluginCall `json:"plugin_call,omitempty"`
 	// function call input parameters
 	ToolCalls *[]ToolCalls `json:"tool_calls,omitempty"`
