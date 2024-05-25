@@ -45,6 +45,7 @@ const (
 	RoleUser      RoleType = "user"
 	RoleAssistant RoleType = "assistant"
 	RolePlugin    RoleType = "plugin"
+	RoleTool      RoleType = "tool"
 )
 
 /*

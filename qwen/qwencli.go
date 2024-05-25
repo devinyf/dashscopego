@@ -32,6 +32,11 @@ func SendMessage[T IQwenContent, U IQwenContent](ctx context.Context, payload *R
 		header["X-DashScope-Plugin"] = payload.Plugins.toString()
 	}
 
+	if len(payload.Tools) != 0 {
+		payload.Parameters.Tools = payload.Tools
+		payload.Tools = nil
+	}
+
 	headerOpt := httpclient.WithHeader(header)
 
 	err := cli.Post(ctx, url, payload, &resp, tokenOpt, headerOpt)

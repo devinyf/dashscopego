@@ -14,6 +14,7 @@ type Parameters struct {
 	Temperature       float64 `json:"temperature,omitempty"`
 	EnableSearch      bool    `json:"enable_search,omitempty"`
 	IncrementalOutput bool    `json:"incremental_output,omitempty"`
+	Tools             []Tool  `json:"tools,omitempty"` // function call tools.
 }
 
 func NewParameters() *Parameters {
@@ -105,6 +106,15 @@ type Message[T IQwenContent] struct {
 	// plugin parameters
 	Name       *string     `json:"name,omitempty"`
 	PluginCall *PluginCall `json:"plugin_call,omitempty"`
+	// function call input parameters
+	ToolCalls *[]ToolCalls `json:"tool_calls,omitempty"`
+}
+
+func (m *Message[T]) HasToolCallInput() bool {
+	if m.ToolCalls != nil && len(*m.ToolCalls) > 0 {
+		return true
+	}
+	return false
 }
 
 type Input[T IQwenContent] struct {
@@ -138,6 +148,8 @@ type Request[T IQwenContent] struct {
 	HasUploadOss bool `json:"-"`
 	// plugin
 	Plugins Plugins `json:"-"`
+	// function_call
+	Tools []Tool `json:"-"`
 }
 
 func (q *Request[T]) SetModel(value string) *Request[T] {
@@ -210,4 +222,8 @@ func (t *OutputResponse[T]) ToJSONStr() string {
 		return err.Error()
 	}
 	return string(b)
+}
+
+func (t *OutputResponse[T]) HasToolCallInput() bool {
+	return t.Output.Choices[0].Message.HasToolCallInput()
 }

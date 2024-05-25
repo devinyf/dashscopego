@@ -138,8 +138,6 @@ func (c *HTTPCli) PostSSE(ctx context.Context, urll string, reqbody interface{},
 func (c *HTTPCli) Post(ctx context.Context, urll string, reqbody interface{}, respbody interface{}, options ...HTTPOption) error {
 	// options = append(options, WithHeader(HeaderMap{"content-type": "application/json"}))
 
-	// fmt.Printf("debug body111 : %+v\n ", reqbody)
-
 	if reqbody == nil {
 		err := &EmptyRequestBodyError{}
 		return err
@@ -159,6 +157,7 @@ func (c *HTTPCli) Post(ctx context.Context, urll string, reqbody interface{}, re
 	if err != nil {
 		return err
 	}
+	// fmt.Println("result: ", string(result))
 
 	if len(result) != 0 && respbody != nil {
 		err = json.Unmarshal(result, &respbody)
@@ -194,11 +193,11 @@ func (c *HTTPCli) EncodeJSONBody(body interface{}) (*bytes.Buffer, error) {
 func (c *HTTPCli) httpInner(ctx context.Context, method, url string, body interface{}, options ...HTTPOption) (*http.Response, error) {
 	var err error
 
-	// fmt.Printf("debug... body: %+v\n", body)
 	bodyBuffer, err := c.EncodeJSONBody(body)
 	if err != nil {
 		return nil, err
 	}
+	// fmt.Printf("debug... body: %+v\n", bodyBuffer.String())
 
 	c.req, err = http.NewRequestWithContext(ctx, method, url, bodyBuffer)
 	if err != nil {
