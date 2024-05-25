@@ -15,12 +15,12 @@ go get -u github.com/devinyf/dashscopego
 - [x] [大语言模型](./example/qwen/stream_call.go)
 - [x] [千问VL(视觉理解模型)](./example/qwen_vl/stream_call.go)
 - [x] [千问Audio(音频语言模型)](./example/qwen_audio/stream_call.go)
-	###### 模型插件调用
+	##### 模型插件调用
 	- [x] [pdf解析](./example/qwen_plugins/pdf_extracter/main.go)
 	- [x] [Python代码解释器](./example/qwen_plugins/code_interpreter/main.go)
 	- [ ] 计算器
 	- [ ] 图片生成
-	###### Function-Call
+	##### Function-Call
 	- [x] [自定义工具调用](./example/function_call/main.go)
 #### 通义万相
 - [x] [文本生成图像](./example/wanx/img_generation.go)
