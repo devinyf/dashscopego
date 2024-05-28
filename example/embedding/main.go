@@ -24,7 +24,7 @@ func main() {
 	req := &embedding.Request{
 		Model: model,
 		Params: embedding.Params{
-			TextType: embedding.TypeQuery,
+			TextType: embedding.TypeDocument, // 默认值
 		},
 		Input: embedding.Input{
 			Texts: textInputs,
