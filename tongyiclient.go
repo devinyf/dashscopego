@@ -224,7 +224,7 @@ func (q *TongyiClient) CreateSpeechToTextGeneration(ctx context.Context, request
 	return nil
 }
 
-func (q *TongyiClient) CreateEmbedding(ctx context.Context, r *embedding.Request) ([][]float32, int, error) {
+func (q *TongyiClient) CreateEmbedding(ctx context.Context, r *embedding.Request) ([][]float64, int, error) {
 	resp, err := embedding.CreateEmbedding(ctx, r, q.httpCli, q.token)
 	if err != nil {
 		return nil, 0, err
@@ -235,7 +235,7 @@ func (q *TongyiClient) CreateEmbedding(ctx context.Context, r *embedding.Request
 		return nil, 0, ErrEmptyResponse
 	}
 
-	embeddings := make([][]float32, 0)
+	embeddings := make([][]float64, 0)
 	for i := 0; i < len(resp.Output.Embeddings); i++ {
 		embeddings = append(embeddings, resp.Output.Embeddings[i].Embedding)
 	}

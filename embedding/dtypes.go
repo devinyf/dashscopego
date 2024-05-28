@@ -24,7 +24,7 @@ type Response struct {
 
 type Embedding struct {
 	TextIndex int       `json:"text_index"`
-	Embedding []float32 `json:"embedding"`
+	Embedding []float64 `json:"embedding"`
 }
 
 type Output struct {
