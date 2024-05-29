@@ -29,8 +29,8 @@ go get -u github.com/devinyf/dashscopego
 - [ ] 人像风格重绘
 - [ ] 图像背景生成
 #### Paraformer(语音识别文字)
-- [x] [实时语音识别](./example/paraformer/speech2text.go)
-- [ ] 录音文件识别
+- [x] [实时语音识别](./example/paraformer/realtime/speech2text.go)
+- [x] [录音文件识别](./example/paraformer/voice_file/recordfile2text.go)
 #### 语音合成
 - [ ] 文本至语音的实时流式合成
 #### 通用文本向量 Embedding

@@ -45,13 +45,13 @@ func (q *TongyiClient) SetUploadCache(uploadCache qwen.UploadCacher) *TongyiClie
 //
 // nolint:lll
 func (q *TongyiClient) CreateCompletion(ctx context.Context, payload *qwen.Request[*qwen.TextContent]) (*TextQwenResponse, error) {
-	payload = paylosdPreCheck(q, payload)
+	payload = payloadPreCheck(q, payload)
 	return genericCompletion[*qwen.TextContent, *qwen.TextContent](ctx, payload, q.httpCli, qwen.URLQwen(), q.token)
 }
 
 //nolint:lll
 func (q *TongyiClient) CreateVLCompletion(ctx context.Context, payload *qwen.Request[*qwen.VLContentList]) (*VLQwenResponse, error) {
-	payload = paylosdPreCheck(q, payload)
+	payload = payloadPreCheck(q, payload)
 
 	for _, vMsg := range payload.Input.Messages {
 		tmpImageContent, hasImg := vMsg.Content.PopImageContent()
@@ -74,7 +74,7 @@ func (q *TongyiClient) CreateVLCompletion(ctx context.Context, payload *qwen.Req
 
 //nolint:lll
 func (q *TongyiClient) CreateAudioCompletion(ctx context.Context, payload *qwen.Request[*qwen.AudioContentList]) (*AudioQwenResponse, error) {
-	payload = paylosdPreCheck(q, payload)
+	payload = payloadPreCheck(q, payload)
 	for _, acMsg := range payload.Input.Messages {
 		tmpAudioContent, hasAudio := acMsg.Content.PopAudioContent()
 
@@ -100,7 +100,7 @@ func (q *TongyiClient) CreateAudioCompletion(ctx context.Context, payload *qwen.
 //
 //nolint:lll
 func (q *TongyiClient) CreateFileCompletion(ctx context.Context, payload *qwen.Request[*qwen.FileContentList]) (*FileQwenResponse, error) {
-	payload = paylosdPreCheck(q, payload)
+	payload = payloadPreCheck(q, payload)
 
 	for _, vMsg := range payload.Input.Messages {
 		tmpImageContent, hasImg := vMsg.Content.PopFileContent()
@@ -174,20 +174,36 @@ func (q *TongyiClient) CreateImageGeneration(ctx context.Context, payload *wanx.
 	return wanx.CreateImageGeneration(ctx, payload, q.httpCli, q.token)
 }
 
-/*
-func (q *TongyiClient) CreateVoiceFileToTextGeneration(ctx context.Context, request *paraformer.Request) (any, error) {
-	if request.Payload.Model == "" {
+// voice file to text.
+func (q *TongyiClient) CreateVoiceFileToTextGeneration(ctx context.Context, request *paraformer.AsyncTaskRequest) (*paraformer.VoiceFileResponse, error) {
+	if request.Model == "" {
 		if q.Model == "" {
 			return nil, ErrModelNotSet
 		}
-		request.Payload.Model = q.Model
+		request.Model = q.Model
 	}
 
-	return
-	panic("not implemented")
-}
-*/
+	var RequestURLs []string
+	for _, fileURL := range request.Input.FileURLs {
+		ossURL, hasUploadOss, err := checkIfNeedUploadFile(ctx, fileURL, request.Model, q.token, q.uploadCache)
+		if err != nil {
+			return nil, err
+		}
+		if hasUploadOss {
+			// upload file to oss
+			RequestURLs = append(RequestURLs, ossURL)
+			request.HasUploadOss = true
+		} else {
+			RequestURLs = append(RequestURLs, fileURL)
+		}
+	}
 
+	request.Input.FileURLs = RequestURLs
+
+	return paraformer.VoiceFileToTextGeneration(ctx, request, q.httpCli, q.token)
+}
+
+// realtime sppech to text.
 func (q *TongyiClient) CreateSpeechToTextGeneration(ctx context.Context, request *paraformer.Request, reader *bufio.Reader) error {
 	if request.Payload.Model == "" {
 		if q.Model == "" {
@@ -242,7 +258,7 @@ func (q *TongyiClient) CreateEmbedding(ctx context.Context, r *embedding.Request
 	return embeddings, totslTokens, nil
 }
 
-func paylosdPreCheck[T qwen.IQwenContent](q *TongyiClient, payload *qwen.Request[T]) *qwen.Request[T] {
+func payloadPreCheck[T qwen.IQwenContent](q *TongyiClient, payload *qwen.Request[T]) *qwen.Request[T] {
 	if payload.Model == "" {
 		payload.Model = q.Model
 	}

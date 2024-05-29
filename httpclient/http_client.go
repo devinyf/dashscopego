@@ -65,6 +65,8 @@ func (c *HTTPCli) Get(ctx context.Context, urll string, params map[string]string
 		return err
 	}
 
+	// fmt.Println("result: ", string(result))
+
 	err = json.Unmarshal(result, &respbody)
 	if err != nil {
 		return &WrapMessageError{Message: "Unmarshal Json failed", Cause: err}
@@ -197,7 +199,7 @@ func (c *HTTPCli) httpInner(ctx context.Context, method, url string, body interf
 	if err != nil {
 		return nil, err
 	}
-	// fmt.Printf("debug... body: %+v\n", bodyBuffer.String())
+	// fmt.Printf("debug... req-body: %+v\n", bodyBuffer.String())
 
 	c.req, err = http.NewRequestWithContext(ctx, method, url, bodyBuffer)
 	if err != nil {

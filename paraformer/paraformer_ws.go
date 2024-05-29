@@ -10,6 +10,8 @@ import (
 	"github.com/google/uuid"
 )
 
+// real-time voice recognition
+
 func ConnRecognitionClient(request *Request, token string) (*httpclient.WsClient, error) {
 	// Initialize the client with the necessary parameters.
 	header := http.Header{}
