@@ -63,7 +63,7 @@ func ChoseModelQwen(model string) ModelQwen {
 	case "qwen-max-longcontext":
 		return m.QwenMaxLongContext()
 	default:
-		log.Println("target model not found, use default model: qwen-turbo")
+		fmt.Println("target model not found, use default model: qwen-turbo")
 		return m.QwenTurbo()
 	}
 }

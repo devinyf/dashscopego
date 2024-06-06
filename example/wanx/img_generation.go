@@ -5,7 +5,6 @@ import (
 	"context"
 	"image"
 	"image/png"
-	"log"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -57,7 +56,7 @@ func saveImg2Desktop(_ string, data []byte) {
 	buf := bytes.NewBuffer(data)
 	img, _, err := image.Decode(buf)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	usr, err := user.Current()

@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/devinyf/dashscopego"
@@ -102,7 +101,6 @@ NEXT_ROUND:
 		}
 	}
 	// Final result
-	log.Println("\nnon-stream Final Result: ")
-	// nolint:all
-	fmt.Println(resp.Output.Choices[0].Message.Content.ToString())
+	fmt.Println("\nnon-stream Final Result: ")                     // nolint:all
+	fmt.Println(resp.Output.Choices[0].Message.Content.ToString()) // nolint:all
 }

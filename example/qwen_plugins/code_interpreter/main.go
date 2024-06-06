@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"log"
+	"fmt"
 	"os"
 
 	"github.com/devinyf/dashscopego"
@@ -38,7 +38,7 @@ func main() {
 	// TODO: 暂时不支持使用 streaming 模式, 报错: {"code":"InvalidParameter","message":"Plugins=[['code_interpreter']] don't support incremental_output"}
 	// callback function:  print stream result
 	// streamCallbackFn := func(ctx context.Context, chunk []byte) error {
-	// 	log.Print(string(chunk))
+	// 	fmt.Print(string(chunk))
 	// 	return nil
 	// }
 	req := &dashscopego.TextRequest{
@@ -53,16 +53,16 @@ func main() {
 		panic(err)
 	}
 
-	log.Println("\nnon-stream result: ")
-	// log.Printf("%+v\n", resp.ToJSONStr())
+	fmt.Println("\nnon-stream result: ") //nolint:all
+	// fmt.Printf("%+v\n", resp.ToJSONStr())
 
 	// 注意大部分plugin的返回结果是 Messages 不是 Message...
 	for _, v := range resp.Output.Choices[0].Messages {
 		if v.Content != nil {
-			log.Printf("%+v\n", v.Content.ToString())
+			fmt.Printf("%+v\n", v.Content.ToString()) //nolint:all
 		}
 		if v.PluginCall != nil {
-			log.Printf("%+v\n", v.PluginCall.ToString())
+			fmt.Printf("%+v\n", v.PluginCall.ToString()) //nolint:all
 		}
 	}
 }

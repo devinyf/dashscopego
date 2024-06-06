@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 
@@ -206,7 +205,7 @@ func fillInRespData[T IQwenContent](line string, output *StreamOutput[T]) error 
 		output.Output = outputData
 	default:
 		data := bytes.TrimSpace([]byte(line))
-		log.Printf("unknown line: %s", data)
+		fmt.Printf("unknown line: %s", data) //nolint:all
 	}
 
 	return nil

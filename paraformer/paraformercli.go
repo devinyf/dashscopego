@@ -2,7 +2,7 @@ package paraformer
 
 import (
 	"context"
-	"log"
+	"fmt"
 	"time"
 
 	httpclient "github.com/devinyf/dashscopego/httpclient"
@@ -61,7 +61,7 @@ func VoiceFileToTextGeneration(ctx context.Context, req *AsyncTaskRequest, cli h
 			taskStatusReap.Output.TaskStatus == "PENDING" ||
 			taskStatusReap.Output.TaskStatus == "RUNNING" {
 			firstQuery = false
-			log.Println("TaskStatus: ", taskStatusReap.Output.TaskStatus)
+			fmt.Println("TaskStatus: ", taskStatusReap.Output.TaskStatus) //nolint:all
 			taskStatusReap, err = CheckTaskStatus(ctx, &taskReq, cli, tokenHeader, contentHeader)
 			if err != nil {
 				return nil, err
