@@ -36,10 +36,12 @@ go get -u github.com/devinyf/dashscopego
 #### 通用文本向量 Embedding
 - [x] [同步接口](./example/embedding/main.go)
 - [ ] 批处理接口
-#### Langchaingo-Agent(Experimental...)
-- [x] [千问通过 agent 调用通义万象生图](./example/langchaingo/main.go)
+#### Langchaingo 集成 (Experimental...)
+- [x] [通过 langchiango-agent 调用工具: 通义万象生图](./example/langchaingo/main.go)
+- [ ] 通过 langchaingo 调用 function-call 自定义函数
 
-
+---
+### 基本说明:
 ```go
 import (
 	"context"
@@ -51,7 +53,7 @@ import (
 )
 
 func main() {
-	// 定义客户端
+	// 定义 Model,API-KEY, 请求客户端
 	model := qwen.QwenTurbo
 	token := os.Getenv("DASHSCOPE_API_KEY")
 
@@ -72,21 +74,22 @@ func main() {
 		return nil
 	}
 
-	// 定义请求内容
-	// 请求具体字段说明请查阅官方文档的 HTTP调用接口
+	// 定义请求内容.
+	// 请求具体字段说明请查阅官方文档的 'HTTP调用接口' 部分.
 	content := qwen.TextContent{Text: "讲个冷笑话"}
 
 	input := dashscopego.TextInput{
 		Messages: []dashscopego.TextMessage{
-			{Role: "user", Content: &content},
+			{Role: qwen.RoleUser, Content: &content},
 		},
 	}
 
 	req := &dashscopego.TextRequest{
 		Input:       input,             // 请求内容
-		StreamingFn: streamCallbackFn,  // 流式输出的回调函数
+		StreamingFn: streamCallbackFn,  // 流式输出的回调函数, 默认为 nil, 表示不使用流式输出.
 	}
 
+	// 发送请求.
 	ctx := context.TODO()
 	resp, err := cli.CreateCompletion(ctx, req)
 	if err != nil {
@@ -94,9 +97,9 @@ func main() {
 	}
 
 	/*
-	获取结果
-	详细字段说明请查阅 HTTP调用接口的出参描述
-	如果request中没有定义流式输出的回调函数 StreamingFn, 则使用此方法获取应答内容
+	获取结果.
+	详细字段说明请查阅 'HTTP调用接口 -> 出参描述'.
+	如果request中没有定义流式输出的回调函数 StreamingFn, 则使用此方法获取应答内容.
 	*/ 
 	fmt.Println(resp.Output.Choices[0].Message.Content.ToString())
 
