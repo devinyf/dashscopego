@@ -36,9 +36,8 @@ go get -u github.com/devinyf/dashscopego
 #### 通用文本向量 Embedding
 - [x] [同步接口](./example/embedding/main.go)
 - [ ] 批处理接口
-
-#### langchaingo-Agent 
-- TODO...
+#### langchaingo-Agent(Experimental...)
+- [x] [Agent 调用通义万象生图 ](./example/langchaingo/main.go)
 
 
 ```go
