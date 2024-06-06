@@ -23,7 +23,7 @@ func main() {
 	cli := dashscopego.NewTongyiClient(model, token)
 
 	streamCallbackFn := func(_ context.Context, chunk []byte) error {
-		fmt.Print(string(chunk)) //nolint:all
+		fmt.Println("realtime output:", string(chunk)) //nolint:all
 		return nil
 	}
 
