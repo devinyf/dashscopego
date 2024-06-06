@@ -140,6 +140,7 @@ func uploadFileWithCache(ctx context.Context, fileBytes []byte, fileName, mimeTy
 	err = uploadCacher.SaveCache(fileBytes, ossURL)
 	if err != nil {
 		log.Printf("save upload cache error: %v\n", err)
+		return "", err
 	}
 
 	return ossURL, nil
