@@ -3,7 +3,7 @@ package dashscopego
 import (
 	"bufio"
 	"context"
-	"log"
+	"fmt"
 	"strings"
 
 	embedding "github.com/devinyf/dashscopego/embedding"
@@ -17,6 +17,7 @@ type TongyiClient struct {
 	Model       string
 	token       string
 	httpCli     httpclient.IHttpClient
+	wsCli       *httpclient.WsClient // only used for paraformer realtime speech to text.
 	uploadCache qwen.UploadCacher
 }
 
@@ -212,13 +213,14 @@ func (q *TongyiClient) CreateSpeechToTextGeneration(ctx context.Context, request
 		request.Payload.Model = q.Model
 	}
 
-	wsCli, err := paraformer.ConnRecognitionClient(request, q.token)
+	wsCli, err := paraformer.ConnRecognitionClient(ctx, request, q.token)
 	if err != nil {
 		return err
 	}
+	q.wsCli = wsCli
 
 	// handle response by stream callback
-	go paraformer.HandleRecognitionResult(ctx, wsCli, request.StreamingFn)
+	go paraformer.HandleRecognitionResult(wsCli, request.StreamingFn)
 
 	for {
 		// this buf can not be reused,
@@ -229,7 +231,7 @@ func (q *TongyiClient) CreateSpeechToTextGeneration(ctx context.Context, request
 			break
 		}
 		if errRead != nil {
-			log.Printf("read line error: %v\n", errRead)
+			fmt.Printf("read line error: %v\n", errRead) //nolint:all
 			err = errRead
 			return err
 		}
@@ -238,6 +240,14 @@ func (q *TongyiClient) CreateSpeechToTextGeneration(ctx context.Context, request
 	}
 
 	return nil
+}
+
+func (q *TongyiClient) CloseSpeechToTextGeneration() error {
+	if q.wsCli == nil {
+		panic("wsCli is nil")
+	}
+
+	return paraformer.CloseRecognitionClient(q.wsCli)
 }
 
 func (q *TongyiClient) CreateEmbedding(ctx context.Context, r *embedding.Request) ([][]float64, int, error) {

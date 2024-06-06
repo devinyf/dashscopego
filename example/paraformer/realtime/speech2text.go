@@ -3,7 +3,7 @@ package main
 import (
 	"bufio"
 	"context"
-	"log"
+	"fmt"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -23,7 +23,7 @@ func main() {
 	cli := dashscopego.NewTongyiClient(model, token)
 
 	streamCallbackFn := func(_ context.Context, chunk []byte) error {
-		log.Print(string(chunk))
+		fmt.Print(string(chunk)) //nolint:all
 		return nil
 	}
 
@@ -56,12 +56,18 @@ func main() {
 
 	reader := bufio.NewReader(voiceReader)
 
-	if err := cli.CreateSpeechToTextGeneration(context.TODO(), req, reader); err != nil {
+	ctx := context.Background()
+	// defer cancel()
+	if err := cli.CreateSpeechToTextGeneration(ctx, req, reader); err != nil {
 		panic(err)
 	}
 
 	// 等待语音识别结果输出
 	time.Sleep(5 * time.Second)
+	// 手动关闭语音识别
+	cli.CloseSpeechToTextGeneration()
+	time.Sleep(1 * time.Second)
+
 }
 
 // 读取音频文件中的录音 模拟实时语音流. 这里下载的官方文档中的示例音频文件.

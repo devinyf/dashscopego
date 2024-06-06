@@ -1,8 +1,8 @@
 package httpclient
 
 import (
+	"context"
 	"encoding/json"
-	"errors"
 	"log"
 	"net/http"
 	"time"
@@ -88,12 +88,17 @@ type WsClient struct {
 	inputChan  chan WsMessage
 	outputChan chan WsMessage
 	errChan    chan error
+	Over       bool
+	Ctx        context.Context
+	CancelFn   context.CancelFunc
 }
 
-func NewWsClient(url string, headers http.Header) *WsClient {
+func NewWsClient(url string, headers http.Header, ctx context.Context, cancel context.CancelFunc) *WsClient {
 	return &WsClient{
-		URL:     url,
-		Headers: headers,
+		URL:      url,
+		Headers:  headers,
+		Ctx:      ctx,
+		CancelFn: cancel,
 	}
 }
 
@@ -116,7 +121,7 @@ func (c *WsClient) readPump() {
 		log.Printf("error: %v", err)
 	}
 	c.Conn.SetPongHandler(pongFn)
-	for {
+	for !c.Over {
 		_, message, err := c.Conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
@@ -126,19 +131,23 @@ func (c *WsClient) readPump() {
 			break
 		}
 
-		log.Println("message: ", string(message))
+		log.Println("ws output message: ", string(message))
 		c.outputChan <- WsMessage{
 			Type: websocket.TextMessage,
 			Data: message,
 		}
+		log.Print("ws read....")
 		// Process the message (this part needs to be implemented based on your application logic).
 	}
+	log.Print("ws read over")
+
 }
 
 // writePump pumps messages from the write channel to the websocket connection.
 //
 //nolint:cyclop
 func (c *WsClient) writePump() {
+	defer log.Println("ws write over")
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()
@@ -149,7 +158,6 @@ func (c *WsClient) writePump() {
 		case message, ok := <-c.inputChan:
 			if !ok {
 				// The write channel is closed.
-				c.errChan <- errors.New("write channel is closed")
 				err := c.Conn.WriteMessage(websocket.CloseMessage, []byte{})
 				if err != nil {
 					log.Printf("error: %v", err)
