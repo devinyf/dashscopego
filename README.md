@@ -37,7 +37,7 @@ go get -u github.com/devinyf/dashscopego
 - [x] [同步接口](./example/embedding/main.go)
 - [ ] 批处理接口
 #### Langchaingo-Agent(Experimental...)
-- [x] [langchaingo tools: 千问调用通义万象生图](./example/langchaingo/main.go)
+- [x] [千问通过 agent 调用通义万象生图](./example/langchaingo/main.go)
 
 
 ```go
