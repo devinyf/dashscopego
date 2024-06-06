@@ -9,11 +9,14 @@ import (
 	"image"
 	"image/png"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"os/exec"
 	"strings"
 	"time"
+
+	_ "github.com/devinyf/dashscopego/config"
 )
 
 type HTTPOption func(c *HTTPCli)
@@ -65,7 +68,7 @@ func (c *HTTPCli) Get(ctx context.Context, urll string, params map[string]string
 		return err
 	}
 
-	// fmt.Println("result: ", string(result))
+	log.Println("[get] result: ", string(result))
 
 	err = json.Unmarshal(result, &respbody)
 	if err != nil {
@@ -159,7 +162,7 @@ func (c *HTTPCli) Post(ctx context.Context, urll string, reqbody interface{}, re
 	if err != nil {
 		return err
 	}
-	// fmt.Println("result: ", string(result))
+	log.Println("[post] result: ", string(result))
 
 	if len(result) != 0 && respbody != nil {
 		err = json.Unmarshal(result, &respbody)
@@ -199,7 +202,7 @@ func (c *HTTPCli) httpInner(ctx context.Context, method, url string, body interf
 	if err != nil {
 		return nil, err
 	}
-	// fmt.Printf("debug... req-body: %+v\n", bodyBuffer.String())
+	log.Printf("[http-req] body: %+v\n", bodyBuffer.String())
 
 	c.req, err = http.NewRequestWithContext(ctx, method, url, bodyBuffer)
 	if err != nil {

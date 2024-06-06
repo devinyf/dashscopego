@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+
+	_ "github.com/devinyf/dashscopego/config"
 )
 
 const (
