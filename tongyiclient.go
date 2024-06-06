@@ -252,7 +252,13 @@ func (q *TongyiClient) CloseSpeechToTextGeneration() error {
 		return errors.New("wsCli is nil")
 	}
 
-	return paraformer.CloseRecognitionClient(q.wsCli)
+	if err := paraformer.CloseRecognitionClient(q.wsCli); err != nil {
+		return err
+	}
+
+	q.wsCli = nil
+
+	return nil
 }
 
 func (q *TongyiClient) CreateEmbedding(ctx context.Context, r *embedding.Request) ([][]float64, int, error) {

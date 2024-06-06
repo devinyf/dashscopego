@@ -63,7 +63,7 @@ func main() {
 
 	// 等待语音识别结果输出
 	time.Sleep(5 * time.Second)
-	// 手动关闭语音识别
+	// 关闭语音识别连接
 	if err := cli.CloseSpeechToTextGeneration(); err != nil {
 		panic(err)
 	}
