@@ -15,12 +15,13 @@ import (
 )
 
 /*
-	使用通义千问 调用 通义万象 实现文生图功能
-	这个例子展示了如何使用 langchaingo Agent 来调用通义千问(llm) 和 通义万象(tool)
-
-	*实验性功能 还没有并入主分支*
-	*注意在 go.mod 中 replace 了 langchiango 到 fork 功能分支*
-*/
+ *	使用通义千问 调用 通义万象 实现文生图功能
+ *	这个例子展示了如何使用 langchaingo Agent 来调用通义千问(llm) 和 通义万象(tool)
+ *
+ *	注意:
+ *		*实验性功能 还没有并入主分支*
+ *		*在 go.mod 中 replace 了 langchiango 到 fork 功能分支*
+ */
 func main() {
 	if err := agentExample(); err != nil {
 		panic(err)
