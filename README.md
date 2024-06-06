@@ -10,12 +10,12 @@ go get -u github.com/devinyf/dashscopego
 ```
 
 
-### Examples:
+### 功能列表 & Examples:
 #### 通义千问
 - [x] [大语言模型](./example/qwen/stream_call.go)
 - [x] [千问VL(视觉理解模型)](./example/qwen_vl/stream_call.go)
 - [x] [千问Audio(音频语言模型)](./example/qwen_audio/stream_call.go)
-	##### 模型插件调用
+	##### Plugins 模型插件
 	- [x] [pdf解析](./example/qwen_plugins/pdf_extracter/main.go)
 	- [x] [Python代码解释器](./example/qwen_plugins/code_interpreter/main.go)
 	- [ ] 计算器
