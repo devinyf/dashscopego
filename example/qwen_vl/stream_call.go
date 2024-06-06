@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"log"
+	"fmt"
 	"os"
 
 	"github.com/devinyf/dashscopego"
@@ -46,7 +46,7 @@ func main() {
 	}
 	// callback function:  print stream result
 	streamCallbackFn := func(_ context.Context, chunk []byte) error {
-		log.Print(string(chunk))
+		fmt.Print(string(chunk)) //nolint:all
 		return nil
 	}
 
@@ -61,6 +61,6 @@ func main() {
 		panic(err)
 	}
 
-	log.Println("\nnon-stream result: ")
-	log.Println(resp.Output.Choices[0].Message.Content.ToString())
+	fmt.Println("\nnon-stream result: ")                           //nolint:all
+	fmt.Println(resp.Output.Choices[0].Message.Content.ToString()) //nolint:all
 }
