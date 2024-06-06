@@ -6,8 +6,10 @@ import (
 	"os"
 )
 
+//nolint:gochecknoglobals
 var Debug = false
 
+//nolint:gochecknoinits
 func init() {
 	if !Debug {
 		log.SetOutput(io.Discard)

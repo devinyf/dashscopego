@@ -57,7 +57,6 @@ func main() {
 	reader := bufio.NewReader(voiceReader)
 
 	ctx := context.Background()
-	// defer cancel()
 	if err := cli.CreateSpeechToTextGeneration(ctx, req, reader); err != nil {
 		panic(err)
 	}
@@ -65,9 +64,9 @@ func main() {
 	// 等待语音识别结果输出
 	time.Sleep(5 * time.Second)
 	// 手动关闭语音识别
-	cli.CloseSpeechToTextGeneration()
-	time.Sleep(1 * time.Second)
-
+	if err := cli.CloseSpeechToTextGeneration(); err != nil {
+		panic(err)
+	}
 }
 
 // 读取音频文件中的录音 模拟实时语音流. 这里下载的官方文档中的示例音频文件.

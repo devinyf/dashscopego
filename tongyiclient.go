@@ -3,6 +3,7 @@ package dashscopego
 import (
 	"bufio"
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -213,14 +214,18 @@ func (q *TongyiClient) CreateSpeechToTextGeneration(ctx context.Context, request
 		request.Payload.Model = q.Model
 	}
 
-	wsCli, err := paraformer.ConnRecognitionClient(ctx, request, q.token)
+	wsCli, err := paraformer.ConnRecognitionClient(request, q.token)
 	if err != nil {
 		return err
 	}
+
+	innerCtx, cancel := context.WithCancel(ctx)
+	wsCli.CancelFn = cancel
+
 	q.wsCli = wsCli
 
 	// handle response by stream callback
-	go paraformer.HandleRecognitionResult(wsCli, request.StreamingFn)
+	go paraformer.HandleRecognitionResult(innerCtx, wsCli, request.StreamingFn)
 
 	for {
 		// this buf can not be reused,
@@ -244,7 +249,7 @@ func (q *TongyiClient) CreateSpeechToTextGeneration(ctx context.Context, request
 
 func (q *TongyiClient) CloseSpeechToTextGeneration() error {
 	if q.wsCli == nil {
-		panic("wsCli is nil")
+		return errors.New("wsCli is nil")
 	}
 
 	return paraformer.CloseRecognitionClient(q.wsCli)

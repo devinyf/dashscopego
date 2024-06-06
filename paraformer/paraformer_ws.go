@@ -12,14 +12,12 @@ import (
 
 // real-time voice recognition
 
-func ConnRecognitionClient(ctx context.Context, request *Request, token string) (*httpclient.WsClient, error) {
+func ConnRecognitionClient(request *Request, token string) (*httpclient.WsClient, error) {
 	// Initialize the client with the necessary parameters.
 	header := http.Header{}
 	header.Add("Authorization", token)
 
-	ctx_ws, cancelFn := context.WithCancel(ctx)
-
-	client := httpclient.NewWsClient(ParaformerWSURL, header, ctx_ws, cancelFn)
+	client := httpclient.NewWsClient(ParaformerWSURL, header)
 
 	if err := client.ConnClient(request); err != nil {
 		return nil, err
@@ -29,8 +27,6 @@ func ConnRecognitionClient(ctx context.Context, request *Request, token string) 
 }
 
 func CloseRecognitionClient(cli *httpclient.WsClient) error {
-	cli.CancelFn()
-
 	if err := cli.CloseClient(); err != nil {
 		log.Printf("close client error: %v", err)
 		return err
@@ -47,7 +43,7 @@ type ResultWriter interface {
 	WriteResult(str string) error
 }
 
-func HandleRecognitionResult(cli *httpclient.WsClient, fn StreamingFunc) {
+func HandleRecognitionResult(ctx context.Context, cli *httpclient.WsClient, fn StreamingFunc) {
 	outputChan, errChan := cli.ResultChans()
 
 	// TODO: handle errors.
@@ -61,7 +57,7 @@ BREAK_FOR:
 			}
 
 			// streaming callback func
-			if err := fn(cli.Ctx, output.Data); err != nil {
+			if err := fn(ctx, output.Data); err != nil {
 				log.Println("error: ", err)
 				break BREAK_FOR
 			}
@@ -71,7 +67,7 @@ BREAK_FOR:
 				log.Println("error: ", err)
 				break BREAK_FOR
 			}
-		case <-cli.Ctx.Done():
+		case <-ctx.Done():
 			cli.Over = true
 			log.Println("Done")
 			break BREAK_FOR

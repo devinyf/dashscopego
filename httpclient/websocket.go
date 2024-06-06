@@ -7,9 +7,8 @@ import (
 	"net/http"
 	"time"
 
+	_ "github.com/devinyf/dashscopego/config" //nolint:revive
 	"github.com/gorilla/websocket"
-
-	_ "github.com/devinyf/dashscopego/config"
 )
 
 const (
@@ -49,15 +48,20 @@ func (c *WsClient) ConnClient(req interface{}) error {
 
 	err, ok := <-c.errChan
 	if ok && err != nil {
-		log.Println("error: ", err)
+		log.Println("errChain error: ", err)
 	}
 	return nil
 }
 
 func (c *WsClient) CloseClient() error {
+	c.CancelFn()
+
 	close(c.inputChan)
 	close(c.outputChan)
 	close(c.errChan)
+
+	// wait for write a closeMessage when inputchan is closed.
+	time.Sleep(500 * time.Millisecond)
 	c.Conn.Close()
 	return nil
 }
@@ -91,16 +95,13 @@ type WsClient struct {
 	outputChan chan WsMessage
 	errChan    chan error
 	Over       bool
-	Ctx        context.Context
 	CancelFn   context.CancelFunc
 }
 
-func NewWsClient(url string, headers http.Header, ctx context.Context, cancel context.CancelFunc) *WsClient {
+func NewWsClient(url string, headers http.Header) *WsClient {
 	return &WsClient{
-		URL:      url,
-		Headers:  headers,
-		Ctx:      ctx,
-		CancelFn: cancel,
+		URL:     url,
+		Headers: headers,
 	}
 }
 
@@ -120,14 +121,14 @@ func (c *WsClient) readPump() {
 
 	c.Conn.SetReadLimit(maxMessageSize)
 	if err := c.Conn.SetReadDeadline(pongDelay); err != nil {
-		log.Printf("error: %v", err)
+		log.Printf("SetReadDeadline error: %v", err)
 	}
 	c.Conn.SetPongHandler(pongFn)
 	for !c.Over {
 		_, message, err := c.Conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				log.Printf("error: %v", err)
+				log.Printf("ReadMessage error: %v", err)
 				c.errChan <- err
 			}
 			break
@@ -142,7 +143,6 @@ func (c *WsClient) readPump() {
 		// Process the message (this part needs to be implemented based on your application logic).
 	}
 	log.Print("ws read over")
-
 }
 
 // writePump pumps messages from the write channel to the websocket connection.
@@ -162,13 +162,13 @@ func (c *WsClient) writePump() {
 				// The write channel is closed.
 				err := c.Conn.WriteMessage(websocket.CloseMessage, []byte{})
 				if err != nil {
-					log.Printf("error: %v", err)
+					log.Printf("WriteMessage error: %v", err)
 				}
 				return
 			}
 			err := c.Conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if err != nil {
-				log.Printf("error: %v", err)
+				log.Printf("SetWriteDeadline error: %v", err)
 			}
 
 			// TODO: 临时输出

@@ -16,7 +16,7 @@ import (
 	"strings"
 	"time"
 
-	_ "github.com/devinyf/dashscopego/config"
+	_ "github.com/devinyf/dashscopego/config" //nolint:revive
 )
 
 type HTTPOption func(c *HTTPCli)
