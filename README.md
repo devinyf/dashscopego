@@ -33,7 +33,7 @@ go get -u github.com/devinyf/dashscopego
 - [x] [录音文件识别](./example/paraformer/voice_file/recordfile2text.go)
 #### 语音合成
 - [ ] 文本至语音的实时流式合成
-#### 通用文本向量 Embedding
+#### Embedding(通用文本向量)
 - [x] [同步接口](./example/embedding/main.go)
 - [ ] 批处理接口
 #### Langchaingo 集成 (Experimental...)
