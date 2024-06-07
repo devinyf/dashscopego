@@ -19,7 +19,7 @@ import (
  *	这个例子展示了如何使用 langchaingo Agent 来调用通义千问(llm) 和 通义万象(tool)
  *
  *	注意:
- *		*实验性功能 还没有并入主分支*
+ *		*实验性功能: 没有并入 langchiango 主分支*
  *		*在 go.mod 中 replace 了 langchiango 到 fork 功能分支*
  */
 func main() {
