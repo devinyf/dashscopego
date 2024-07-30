@@ -20,19 +20,28 @@ type TongyiClient struct {
 	httpCli     httpclient.IHttpClient
 	wsCli       *httpclient.WsClient // only used for paraformer realtime speech to text.
 	uploadCache qwen.UploadCacher
+	baseUrl     string
 }
 
 func NewTongyiClient(model string, token string) *TongyiClient {
 	httpcli := httpclient.NewHTTPClient()
-	return newTongyiCLientWithHTTPCli(model, token, httpcli)
+	baseURL := qwen.DashScopeBaseURL
+	return newTongyiCLientWithHTTPCli(baseURL, model, token, httpcli)
 }
 
-func newTongyiCLientWithHTTPCli(model string, token string, httpcli httpclient.IHttpClient) *TongyiClient {
+func NewTongyiClientIntl(model string, token string) *TongyiClient {
+	httpcli := httpclient.NewHTTPClient()
+	baseURL := qwen.DashScopeIntlBaseURL
+	return newTongyiCLientWithHTTPCli(baseURL, model, token, httpcli)
+}
+
+func newTongyiCLientWithHTTPCli(baseURL, model, token string, httpcli httpclient.IHttpClient) *TongyiClient {
 	return &TongyiClient{
 		Model:       model,
 		httpCli:     httpcli,
 		token:       token,
 		uploadCache: qwen.NewMemoryFileCache(),
+		baseUrl:     baseURL,
 	}
 }
 
@@ -48,7 +57,7 @@ func (q *TongyiClient) SetUploadCache(uploadCache qwen.UploadCacher) *TongyiClie
 // nolint:lll
 func (q *TongyiClient) CreateCompletion(ctx context.Context, payload *qwen.Request[*qwen.TextContent]) (*TextQwenResponse, error) {
 	payload = payloadPreCheck(q, payload)
-	return genericCompletion[*qwen.TextContent, *qwen.TextContent](ctx, payload, q.httpCli, qwen.URLQwen(), q.token)
+	return genericCompletion[*qwen.TextContent, *qwen.TextContent](ctx, payload, q.httpCli, qwen.URLQwen(q.baseUrl), q.token)
 }
 
 //nolint:lll
@@ -71,7 +80,7 @@ func (q *TongyiClient) CreateVLCompletion(ctx context.Context, payload *qwen.Req
 		}
 	}
 
-	return genericCompletion[*qwen.VLContentList, *qwen.VLContentList](ctx, payload, q.httpCli, qwen.URLQwenVL(), q.token)
+	return genericCompletion[*qwen.VLContentList, *qwen.VLContentList](ctx, payload, q.httpCli, qwen.URLQwenVL(q.baseUrl), q.token)
 }
 
 //nolint:lll
@@ -95,7 +104,7 @@ func (q *TongyiClient) CreateAudioCompletion(ctx context.Context, payload *qwen.
 		}
 	}
 
-	return genericCompletion[*qwen.AudioContentList, *qwen.AudioContentList](ctx, payload, q.httpCli, qwen.URLQwenVL(), q.token)
+	return genericCompletion[*qwen.AudioContentList, *qwen.AudioContentList](ctx, payload, q.httpCli, qwen.URLQwenAudio(q.baseUrl), q.token)
 }
 
 // used for pdf_extracter plugin.
@@ -120,7 +129,7 @@ func (q *TongyiClient) CreateFileCompletion(ctx context.Context, payload *qwen.R
 		}
 	}
 
-	return genericCompletion[*qwen.FileContentList, *qwen.TextContent](ctx, payload, q.httpCli, qwen.URLQwen(), q.token)
+	return genericCompletion[*qwen.FileContentList, *qwen.TextContent](ctx, payload, q.httpCli, qwen.URLQwen(q.baseUrl), q.token)
 }
 
 func checkIfNeedUploadFile(ctx context.Context, filepath string, model, token string, uploadCacher qwen.UploadCacher) (string, bool, error) {

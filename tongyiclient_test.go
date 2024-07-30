@@ -34,7 +34,7 @@ func newMockClient(t *testing.T, model string, ctrl *gomock.Controller, f mockFn
 
 	f(mockHTTPCli)
 
-	qwenCli := newTongyiCLientWithHTTPCli(model, fackToken, mockHTTPCli)
+	qwenCli := newTongyiCLientWithHTTPCli(qwen.DashScopeBaseURL, model, fackToken, mockHTTPCli)
 	return qwenCli
 }
 

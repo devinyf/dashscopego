@@ -2,6 +2,7 @@ package qwen
 
 const (
 	DashScopeBaseURL = "https://dashscope.aliyuncs.com/api"
+	DashScopeIntlBaseURL = "https://dashscope-intl.aliyuncs.com/api"
 	QwenSubURL       = "/v1/services/aigc/text-generation/generation"
 	QwenVLSubURL     = "/v1/services/aigc/multimodal-generation/generation"
 	QwenAudioSubURL  = QwenVLSubURL
@@ -25,17 +26,17 @@ const (
 )
 
 // text-generation only.
-func URLQwen() string {
-	return DashScopeBaseURL + QwenSubURL
+func URLQwen(baseURL string) string {
+	return baseURL + QwenSubURL
 }
 
 // multimodal.
-func URLQwenVL() string {
-	return DashScopeBaseURL + QwenVLSubURL
+func URLQwenVL(baseURL string) string {
+	return baseURL + QwenVLSubURL
 }
 
-func URLQwenAudio() string {
-	return DashScopeBaseURL + QwenAudioSubURL
+func URLQwenAudio(baseURL string) string {
+	return baseURL + QwenAudioSubURL
 }
 
 type RoleType = string
