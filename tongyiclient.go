@@ -23,12 +23,14 @@ type TongyiClient struct {
 	baseUrl     string
 }
 
+// qwen client with default base url (CN).
 func NewTongyiClient(model string, token string) *TongyiClient {
 	httpcli := httpclient.NewHTTPClient()
 	baseURL := qwen.DashScopeBaseURL
 	return newTongyiCLientWithHTTPCli(baseURL, model, token, httpcli)
 }
 
+// qwen client with international base url.
 func NewTongyiClientIntl(model string, token string) *TongyiClient {
 	httpcli := httpclient.NewHTTPClient()
 	baseURL := qwen.DashScopeIntlBaseURL
