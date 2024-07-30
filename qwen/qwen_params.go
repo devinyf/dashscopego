@@ -1,11 +1,11 @@
 package qwen
 
 const (
-	DashScopeBaseURL = "https://dashscope.aliyuncs.com/api"
+	DashScopeBaseURL     = "https://dashscope.aliyuncs.com/api"
 	DashScopeIntlBaseURL = "https://dashscope-intl.aliyuncs.com/api"
-	QwenSubURL       = "/v1/services/aigc/text-generation/generation"
-	QwenVLSubURL     = "/v1/services/aigc/multimodal-generation/generation"
-	QwenAudioSubURL  = QwenVLSubURL
+	QwenSubURL           = "/v1/services/aigc/text-generation/generation"
+	QwenVLSubURL         = "/v1/services/aigc/multimodal-generation/generation"
+	QwenAudioSubURL      = QwenVLSubURL
 )
 
 type ModelQwen = string
