@@ -42,8 +42,8 @@ type FunctionCall struct {
 }
 
 // API 接口返回的是 string, 这里转换为 map.
-func (f FunctionCall) GetArguments() map[string]string {
-	argMap := make(map[string]string)
+func (f FunctionCall) GetArguments() map[string]map[string]string {
+	argMap := make(map[string]map[string]string)
 	err := json.Unmarshal([]byte(f.Arguments), &argMap)
 	if err != nil {
 		panic(err)

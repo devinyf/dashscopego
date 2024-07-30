@@ -77,7 +77,7 @@ NEXT_ROUND:
 			fnName := toolCall.Function.Name
 			if fnName == "get_current_weather" {
 				argMap := toolCall.Function.GetArguments()
-				cityName := argMap["location"]
+				cityName := argMap["properties"]["location"]
 				toolAnswer := getCurrentWeather(cityName)
 				// fmt.Println("tool answer: ", tool_answer)
 
