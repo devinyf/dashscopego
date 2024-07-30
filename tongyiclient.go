@@ -184,7 +184,7 @@ func (q *TongyiClient) CreateImageGeneration(ctx context.Context, payload *wanx.
 		}
 		payload.Model = q.Model
 	}
-	return wanx.CreateImageGeneration(ctx, payload, q.httpCli, q.token)
+	return wanx.CreateImageGeneration(ctx, q.baseUrl, payload, q.httpCli, q.token)
 }
 
 // voice file to text.

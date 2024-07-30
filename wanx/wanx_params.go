@@ -3,9 +3,8 @@ package wanx
 import "fmt"
 
 const (
-	DashScopeBaseURL  = "https://dashscope.aliyuncs.com"
-	ImageSynthesisURI = "/api/v1/services/aigc/text2image/image-synthesis"
-	TaskURI           = "/api/v1/tasks/%s"
+	ImageSynthesisURI = "/v1/services/aigc/text2image/image-synthesis"
+	TaskURI           = "/v1/tasks/%s"
 )
 
 type ModelWanx = string
@@ -16,10 +15,10 @@ const (
 	WanxBgGenV2        ModelWanx = "wanx-background-generation-v2"
 )
 
-func ImageSynthesisURL() string {
-	return DashScopeBaseURL + ImageSynthesisURI
+func ImageSynthesisURL(baseURL string) string {
+	return baseURL + ImageSynthesisURI
 }
 
-func TaskURL(taskID string) string {
-	return DashScopeBaseURL + fmt.Sprintf(TaskURI, taskID)
+func TaskURL(baseURL, taskID string) string {
+	return baseURL + fmt.Sprintf(TaskURI, taskID)
 }
