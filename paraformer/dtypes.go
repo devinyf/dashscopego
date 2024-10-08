@@ -3,8 +3,10 @@ package paraformer
 import "context"
 
 type Parameters struct {
-	SampleRate int    `json:"sample_rate"`
-	Format     string `json:"format"`
+	SampleRate               int      `json:"sample_rate"`
+	Format                   string   `json:"format"`
+	DisfluencyRemovalEnabled bool     `json:"disfluency_removal_enabled"`
+	LanguageHints            []string `json:"language_hints"`
 }
 
 type StreamingFunc func(ctx context.Context, chunk []byte) error

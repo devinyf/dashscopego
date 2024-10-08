@@ -38,6 +38,8 @@ func main() {
 			// seems like only support 16000 sample-rate.
 			SampleRate: 16000,
 			Format:     "pcm",
+			DisfluencyRemovalEnabled: true,
+			LanguageHints: []string{"zh", "en"},
 		},
 		Input:     map[string]interface{}{},
 		Task:      "asr",
