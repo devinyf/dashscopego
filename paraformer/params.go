@@ -9,9 +9,14 @@ const (
 	ParaformerV1    ModelParaformer = "paraformer-v1"
 	Paraformer8KV1  ModelParaformer = "paraformer-8k-v1"
 	ParaformerMtlV1 ModelParaformer = "paraformer-mtl-v1"
+	ParaformerV2    ModelParaformer = "paraformer-v2"
+	Paraformer8KV2  ModelParaformer = "paraformer-8k-v2"
+
 	// real time voice.
 	ParaformerRealTimeV1   ModelParaformer = "paraformer-realtime-v1"
 	ParaformerRealTime8KV1 ModelParaformer = "paraformer-realtime-8k-v1"
+	ParaformerRealTimeV2   ModelParaformer = "paraformer-realtime-v2"
+	ParaformerRealTime8KV2 ModelParaformer = "paraformer-realtime-8k-v2"
 )
 
 const (
