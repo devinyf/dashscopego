@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	model := paraformer.ParaformerV1
+	model := paraformer.ParaformerV2
 	token := os.Getenv("DASHSCOPE_API_KEY")
 	if token == "" {
 		panic("token is empty")
@@ -29,12 +29,14 @@ func main() {
 	filePath := "file://" + voiceFile
 
 	req := &paraformer.AsyncTaskRequest{
-		Model: paraformer.ParaformerV1,
+		Model: paraformer.ParaformerV2,
 		Input: paraformer.AsyncInput{
 			// 官方示例中使用的远程文件.
 			// FileURLs: []string{"https://dashscope.oss-cn-beijing.aliyuncs.com/samples/audio/paraformer/hello_world_female2.wav"},
 			// 本地文件.
-			FileURLs: []string{filePath},
+			FileURLs:                 []string{filePath},
+			DisfluencyRemovalEnabled: true,
+			LanguageHints:            []string{"zh", "en"},
 		},
 		Download: true, // 是否下载异步任务结果.
 	}
