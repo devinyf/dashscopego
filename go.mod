@@ -1,6 +1,6 @@
 module github.com/devinyf/dashscopego
 
-go 1.21.0
+go 1.22.0
 
 require (
 	github.com/gabriel-vasile/mimetype v1.4.2
