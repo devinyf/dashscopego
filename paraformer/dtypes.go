@@ -76,7 +76,11 @@ type AsyncTaskRequest struct {
 }
 
 type AsyncInput struct {
-	FileURLs []string `json:"file_urls"`
+	FileURLs                 []string `json:"file_urls"`
+	VocabularyID             string   `json:"vocabulary_id,omitempty"`              // 热词表 ID.
+	ChannelID                []int    `json:"channel_id,omitempty"`                 // 音轨索引.
+	DisfluencyRemovalEnabled bool     `json:"disfluency_removal_enabled,omitempty"` // 过滤语气词.
+	LanguageHints            []string `json:"language_hints,omitempty"`             // 识别语音中语言的代码列表. 仅对paraformer-v2生效
 }
 
 type AsyncTaskResponse struct {
